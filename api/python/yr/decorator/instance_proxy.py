@@ -711,7 +711,8 @@ def get_instance_by_name(name, namespace, timeout) -> InstanceProxy:
         class_methods = inspect.getmembers(user_class, utils.is_function_or_method)
         user_class_methods = dict(class_methods)
         base_cls = inspect.getmro(user_class)
-        ins_proxy = InstanceProxy(namespace + "-" + name if namespace else name,
+        yr_ns = runtime.get_namespace()
+        ins_proxy = InstanceProxy(namespace + "-" + name if namespace else yr_ns + "-" + name,
                                   user_class_descriptor,
                                   user_class_methods,
                                   base_cls,
