@@ -92,10 +92,9 @@ bash build.sh -X off
 git clone -b master https://gitee.com/openeuler/yuanrong-functionsystem.git
 ```
 
-函数系统的编译依赖数据系统发布包，您可以通过以下方式之一指定数据系统发布包的位置：
+函数系统的编译依赖数据系统发布包：
 
-* 配置环境变量 `DATA_SYSTEM_CACHE` 指定发布包的下载路径。例如：export DATA_SYSTEM_CACHE="http://192.168.2.2/release/yr-datasystem-v0.0.1.tar.gz"。
-* 使用本地已有发布包。新建目录 `/opt/openyuanrong/yuanrong-functionsystem/datasystem/output`，拷贝发布包 `yr-datasystem-vx.x.x.tar.gz` 到该目录并解压。
+* 新建目录 `/opt/openyuanrong/yuanrong-functionsystem/datasystem/output`，拷贝已编译好的发布包 `yr-datasystem-vx.x.x.tar.gz` 到该目录并解压。
 
 执行如下脚本编译。
 
@@ -125,10 +124,9 @@ bash build.sh
 git clone -b master https://gitee.com/openeuler/yuanrong-runtime.git
 ```
 
-运行时的编译依赖数据系统和函数系统发布包，您可以通过以下方式之一指定数据系统和函数系统发布包的位置：
+运行时的编译依赖数据系统和函数系统发布包：
 
-* 配置环境变量 `DATA_SYSTEM_CACHE` 和 `FUNCTION_SYSTEM_CACHE` 指定发布包的下载路径。例如：export DATA_SYSTEM_CACHE="http://192.168.2.2/release/yr-datasystem-v0.0.1.tar.gz" 和 export FUNCTION_SYSTEM_CACHE="http://192.168.2.2/release/yr-functionsystem-v0.0.1.tar.gz"。
-* 使用本地已有发布包。新建目录 `/opt/openyuanrong/datasystem/output`，拷贝数据系统发布包 `yr-datasystem-vx.x.x.tar.gz` 到该目录并解压。解压函数系统发布包 `yr-functionsystem-vx.x.x.tar.gz`，拷贝包中 `metrics` 文件夹到 `/opt/openyuanrong` 目录下。
+* 新建目录 `/opt/openyuanrong/datasystem/output`，拷贝已编译好的数据系统发布包 `yr-datasystem-vx.x.x.tar.gz` 到该目录并解压。解压已编译好的函数系统发布包 `yr-functionsystem-vx.x.x.tar.gz`，拷贝包中 `metrics` 文件夹到 `/opt/openyuanrong` 目录下。
 
 执行如下脚本编译。
 
