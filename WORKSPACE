@@ -116,13 +116,13 @@ http_archive(
 new_local_repository(
     name = "datasystem_sdk",
     build_file = "@//bazel:datasystem_sdk.bzl",
-    path = "../datasystem/output/sdk/",
+    path = "./datasystem/output/sdk/",
 )
 
 new_local_repository(
     name = "metrics_sdk",
     build_file = "@//bazel:metrics_sdk.bzl",
-    path = "../metrics/",
+    path = "./metrics/",
 )
 
 load("@bazel_tools//tools/jdk:remote_java_repository.bzl", "remote_java_repository")
