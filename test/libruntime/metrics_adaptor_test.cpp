@@ -147,7 +147,7 @@ std::string GetLibPath()
     auto idx = path.rfind("yuanrong-runtime");
     if (idx != std::string::npos) {
         std::string subPath = path.substr(0, idx);
-        return subPath + "metrics/lib";
+        return subPath + "yuanrong-runtime/metrics/lib";
     }
     return "";
 }
