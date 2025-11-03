@@ -32,9 +32,9 @@ BASE_DIR=$(
     pwd
 )
 RUNTIME_SRC_DIR="${BASE_DIR}/../"
-YR_DATASYSTEM_BIN_DIR="${RUNTIME_SRC_DIR}/../datasystem"
-YR_FUNCTIONSYSTEM_BIN_DIR="${RUNTIME_SRC_DIR}/../functionsystem"
-YR_METRICS_BIN_DIR="${RUNTIME_SRC_DIR}/../metrics"
+YR_DATASYSTEM_BIN_DIR="${RUNTIME_SRC_DIR}/datasystem"
+YR_FUNCTIONSYSTEM_BIN_DIR="${RUNTIME_SRC_DIR}/functionsystem"
+YR_METRICS_BIN_DIR="${RUNTIME_SRC_DIR}/metrics"
 THIRD_PARTY_DIR="${RUNTIME_SRC_DIR}/../thirdparty/"
 MODULES="runtime"
 bash -x ${BASE_DIR}/download_opensource.sh -M $MODULES -T $THIRD_PARTY_DIR
@@ -150,6 +150,7 @@ function download_cache() {
 }
 
 if [ "$BUILD_ALL" == "true" ]; then
+  cd $RUNTIME_SRC_DIR
   if [ ! -d ${YR_FUNCTIONSYSTEM_BIN_DIR} ]; then
     git clone https://gitee.com/openeuler/yuanrong-functionsystem.git -b master functionsystem
   fi
