@@ -102,7 +102,7 @@ function download_open_src() {
 
     local filename="${name}"-"$(basename ${repo})"
     if [ -n "${THIRD_PARTY_CACHE}" ]; then
-        if ! curl -sS -LO "${THIRD_PARTY_CACHE}/${filename}" --retry 3; then
+        if ! wget "${THIRD_PARTY_CACHE}/${filename}"; then
             echo -e "=== download ${name}-${tag} cache to ${savepath} failed ==="
             cd ..
             rm -rf "${savepath}/${name}"

@@ -77,6 +77,7 @@ BAZEL_OPTIONS_ENV=""
 SECBRELLA_CCE="OFF"
 PACKAGE_ALL="false"
 LD_LIBRARY_PATH=/opt/buildtools/python3.7/lib:/opt/buildtools/python3.9/lib:/opt/buildtools/python3.11/lib:${LD_LIBRARY_PATH}
+export BUILD_ALL="false"
 if [ ! -d "${THIRD_PARTY_DIR}" ]; then
   mkdir -p "${THIRD_PARTY_DIR}"
 fi
@@ -220,8 +221,11 @@ function check_sanitizers() {
   fi
 }
 
-while getopts 'thr:v:S:DcCgPET:p:bm:j:g' opt; do
+while getopts 'athr:v:S:DcCgPET:p:bm:j:g' opt; do
     case "$opt" in
+    a)
+        BUILD_ALL="true"
+        ;;
     t)
         BAZEL_COMMAND="test"
         BAZEL_TARGETS="//test/... //api/python/yr/tests/... //api/java:java_tests"
