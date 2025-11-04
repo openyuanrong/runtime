@@ -84,3 +84,13 @@ TEST_F(AutoInitTest, AutoInitWithClusterAccessInfo)
     ASSERT_EQ(info2.dsAddr, "127.0.0.1:31499");
     ASSERT_EQ(info2.inCluster, true);
 }
+
+TEST_F(AutoInitTest, ParseFromMasterInfo)
+{
+    MakeMasterInfoFile(YR::Libruntime::kDefaultDeployPathCurrMasterInfo, masterInfoString);
+    YR::Libruntime::ClusterAccessInfo info;
+    info.ParseFromMasterInfo();
+    ASSERT_EQ(info.serverAddr, "127.0.0.1:34834");
+    ASSERT_EQ(info.dsAddr, "127.0.0.1:31499");
+    ASSERT_EQ(info.inCluster, true);
+}

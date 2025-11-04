@@ -67,9 +67,9 @@ def preload_grpc():
 
     http_archive(
         name = "com_googlesource_code_re2",
-        url = "https://gitee.com/mirrors/re2/repository/archive/2024-07-02.zip",
-        sha256 = "20f5af5320da5a704125eaec5965ddc0cfa86fb420575a9f9f04c5cef905ba93",
-        strip_prefix = "re2-2024-07-02",
+        url = "https://gitee.com/mirrors/re2/repository/archive/2024-02-01.zip",
+        sha256 = "54bff0e995b101e1865dcea5d052ec10b3aadb6f8c57b5c03c9eeccddb00a08a",
+        strip_prefix = "re2-2024-02-01",
     )
 
     http_archive(
