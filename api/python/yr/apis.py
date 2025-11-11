@@ -724,8 +724,7 @@ def kv_write(key: str, value: bytes, existence: ExistenceOpt = ExistenceOpt.NONE
 @check_initialized
 def kv_write_with_param(key: str, value: bytes, set_param: SetParam) -> None:
     """
-    Provides the Redis class's set storage interface,
-    which supports saving binary data to the data system.
+    Provide a storage interface that supports custom parameter configuration, enabling binary data to be written to the data system in a more flexible manner.
 
     Args:
         key (str): Sets a key for the data to be saved, which is used to identify the data.
@@ -761,7 +760,7 @@ def kv_write_with_param(key: str, value: bytes, set_param: SetParam) -> None:
 @check_initialized
 def kv_m_write_tx(keys: List[str], values: List[bytes], m_set_param: MSetParam = MSetParam()) -> None:
     """
-    It provides a Redis-like set storage interface, supporting the saving of a set of binary data to the data system.
+    Provide a Redis-like set storage interface that supports persisting a collection of binary data into the data system.
 
     Args:
         keys (List[str]): Set a set of keys for the saved data to identify the data. Use this key for querying data.
@@ -1483,7 +1482,7 @@ def java_function(class_name: str, function_name: str, function_urn: str) -> Fun
 
 def java_instance_class(class_name: str, function_urn: str) -> InstanceCreator:
     """
-    A proxy used to construct java classes and remotely invoke java classes.
+    A proxy used to construct Java classes and invoke them remotely. 
 
     Args:
         class_name (str): The name of java.
