@@ -87,7 +87,7 @@ class Config:
     invoke_timeout: int = 900
     #: Run code in local, default is ``False``.
     local_mode: bool = False
-    #: Need set which init in runtime.
+    #: The code directory path that must be configured at runtime initialization.
     code_dir: str = ""
     #: Http client connection nums.
     #: default is ``100``, limit: [1,∞).
