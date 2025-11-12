@@ -334,7 +334,7 @@ def wait(obj_refs: Union[ObjectRef, List[ObjectRef]], wait_num: int = 1,
 
     Args:
         object_refs (list): Data saved to the data system.
-        wait_num (int, optional): The minimum number of objects to wait for. If set to ``None``, it defaults to ``1``.
+        wait_num (int, optional): The minimum number of objects to wait for. It defaults to ``1``.
             The value should not exceed the length of `obj_refs`.
         timeout (int, optional): The timeout in seconds. Note that if the default value ``None`` is used,
             it will wait indefinitely, with the actual maximum wait time limited by the wait factors in `get`.
@@ -1399,7 +1399,7 @@ def cpp_function(function_name: str, function_urn: str) -> FunctionProxy:
         function_urn (str): The URN (Uniform Resource Name) of cpp function.
 
     Returns:
-        The corresponding function proxy.
+        Return a proxy object for the remote C++ function.
         Data type is FunctionProxy.
 
     Examples:
