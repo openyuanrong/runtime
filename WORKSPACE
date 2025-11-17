@@ -176,6 +176,12 @@ http_archive(
     build_file = "@//bazel:jacoco.bzl"
 )
 
+new_local_repository(
+    name = "gloo",
+    build_file = "//third_party:gloo.bzl",
+    path = "../third_party/gloo",
+)
+
 maybe(
     new_local_repository,
     name = "securec",

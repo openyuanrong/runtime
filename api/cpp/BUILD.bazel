@@ -43,6 +43,7 @@ cc_library(
         "@securec",
         "@nlohmann_json",
         "@yaml-cpp",
+        "@gloo//:gloo",
     ],
     alwayslink = True,
 )
