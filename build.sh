@@ -236,6 +236,7 @@ function install_python_requirements() {
     pip3.9 install fastapi
     pip3.9 install aiohttp # only for test
     pip3.9 install requests
+    pip3.9 install wheel==0.36.2
 }
 
 function check_sanitizers() {
