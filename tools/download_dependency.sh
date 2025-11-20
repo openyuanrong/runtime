@@ -121,7 +121,9 @@ function compile_functionsystem() {
 
 function compile_frontend() {
     cd ${YR_FRONTEND_SRC_DIR}
-    ln -sf ${RUNTIME_SRC_DIR} ${RUNTIME_SRC_DIR}/runtime
+    if [ ! -d "${RUNTIME_SRC_DIR}/runtime" ]; then
+        ln -sf ${RUNTIME_SRC_DIR} ${RUNTIME_SRC_DIR}/runtime
+    fi
     bash build.sh
     cd output
     cp -f ${YR_FRONTEND_SRC_DIR}/output/yr-frontend*.tar.gz $RUNTIME_OUTPUT_DIR/
@@ -129,9 +131,7 @@ function compile_frontend() {
 
 function compile_dashboard() {
     cd ${YR_DASHBOARD_SRC_DIR}
-    bash build.sh
-    cd output
-    cp -f ${YR_DASHBOARD_SRC_DIR}/output/yr-dashboard*.tar.gz $RUNTIME_OUTPUT_DIR/
+    bash build/build.sh
 }
 
 function compile_all(){
