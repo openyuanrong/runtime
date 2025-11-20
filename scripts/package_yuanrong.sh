@@ -105,7 +105,7 @@ fi
 
 dashboard_filename=$(ls *dashboard*.tar.gz)
 if [ -n "${dashboard_filename}" ]; then
-    tar -zxvf ${dashboard_filename} -C ${OUTPUT_DIR}/openyuanrong/funcion_system/
+    tar -zxvf ${dashboard_filename} -C ${OUTPUT_DIR}/openyuanrong/function_system/
 fi
 
 find . -type d -exec chmod 750 {} \;
