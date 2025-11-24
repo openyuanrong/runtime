@@ -7,6 +7,9 @@ yr.UInt64Counter
 
     表示 64 位无符号整数计数器的类。
 
+    .. note::
+        如果启动 yr 时未配置 `runtime_metrics_config`，则样例无法使用。
+
     参数：
         - **name** (str) - 计数器名称。
         - **description** (str) - 计数器描述。
