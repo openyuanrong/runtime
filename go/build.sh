@@ -56,6 +56,7 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 go env -w "GOFLAGS"="-mod=mod"
 
 echo "generating fs proto pb objects"
+mkdir -p "${OUTPUT_DIR}"
 protoc --proto_path=${POSIX_DIR} --go_out=${OUTPUT_DIR} --go-grpc_out=${OUTPUT_DIR} ${POSIX_DIR}/*.proto
 cp -ar ${OUTPUT_DIR}/yuanrong.org/kernel/pkg/ ${PROJECT_DIR}
 rm -rf "${OUTPUT_DIR}/yuanrong.org"
@@ -96,8 +97,12 @@ CC='gcc -fstack-protector-strong -D_FORTIFY_SOURCE=2 -O2' go build -tags="${BUIL
 "${OUTPUT_DIR}"/bin/collector "${PROJECT_DIR}"/cmd/collector/main.go
 
 cd "${OUTPUT_DIR}"
-tar -czvf yr-dashboard-v0.0.1.tar.gz ./*
+TAR_NAME="yr-dashboard-${VERSION}.tar.gz"
+if [ -z "${VERSION}" ]; then
+    TAR_NAME="yr-dashboard.tar.gz"
+fi
+tar -czvf "${TAR_NAME}" ./*
 mkdir -p "${RUNTIME_OUTPUT_DIR}"
-rm -rf "${RUNTIME_OUTPUT_DIR}/yr-dashboard-v0.0.1.tar.gz"
-cp yr-dashboard-v0.0.1.tar.gz "${RUNTIME_OUTPUT_DIR}"
+rm -rf "${RUNTIME_OUTPUT_DIR}/${TAR_NAME}"
+cp "${TAR_NAME}" "${RUNTIME_OUTPUT_DIR}"
 cd "${PROJECT_DIR}"
