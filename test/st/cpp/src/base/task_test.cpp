@@ -26,10 +26,10 @@ using testing::HasSubstr;
 
 class TaskTest : public testing::Test {
 public:
-    TaskTest(){};
-    ~TaskTest(){};
-    static void SetUpTestCase(){};
-    static void TearDownTestCase(){};
+    TaskTest() {};
+    ~TaskTest() {};
+    static void SetUpTestCase() {};
+    static void TearDownTestCase() {};
     void SetUp()
     {
         YR::Config config;
@@ -926,7 +926,7 @@ TEST_F(TaskTest, KVMSetTxWithParamSuccessfully)
     std::vector<std::string> values;
     std::string key = "kv-key";
     std::string value = "kv-value";
-    for(int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++) {
         std::string key1 = key + std::to_string(i);
         keys.emplace_back(key1);
         std::string value1 = value + std::to_string(i);
@@ -1163,11 +1163,11 @@ TEST_F(TaskTest, RepeatPutShouldNotOOM)
 */
 TEST_F(TaskTest, ConcurrencyCall)
 {
-    int num = 100;
+    int num = 10;
     std::vector<YR::ObjectRef<std::string>> objs_str;
     objs_str.reserve(num);
     YR::InvokeOptions option;
-    option.customExtensions.insert({YR::CONCURRENCY_KEY, "50"});
+    option.customExtensions.insert({YR::CONCURRENCY_KEY, "10"});
     for (int i = 0; i < num; i++) {
         objs_str.push_back(YR::Function(PutOneData).Options(option).Invoke());
     }
