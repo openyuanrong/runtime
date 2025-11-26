@@ -35,15 +35,15 @@ RUNTIME_SRC_DIR="${BASE_DIR}/../"
 YR_DATASYSTEM_BIN_DIR="${RUNTIME_SRC_DIR}/datasystem"
 YR_FUNCTIONSYSTEM_BIN_DIR="${RUNTIME_SRC_DIR}/functionsystem"
 YR_FRONTEND_SRC_DIR="${RUNTIME_SRC_DIR}/../frontend"
-YR_DASHBOARD_SRC_DIR="${RUNTIME_SRC_DIR}/yuanrong"
+YR_DASHBOARD_SRC_DIR="${RUNTIME_SRC_DIR}/go"
 YR_METRICS_BIN_DIR="${RUNTIME_SRC_DIR}/metrics"
 THIRD_PARTY_DIR="${RUNTIME_SRC_DIR}/../thirdparty/"
 RUNTIME_OUTPUT_DIR="${RUNTIME_SRC_DIR}/output"
 MODULES="runtime"
 bash -x ${BASE_DIR}/download_opensource.sh -M $MODULES -T $THIRD_PARTY_DIR
 RUNTIME_THIRD_PARTY_CACHE=${RUNTIME_THIRD_PARTY_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/runtime_deps/"}
-DATA_SYSTEM_CACHE=${DATA_SYSTEM_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/yr_cache/$(uname -m)/yr-datasystem-v0.5.0.tar.gz"}
-FUNCTION_SYSTEM_CACHE=${FUNCTION_SYSTEM_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/yr_cache/$(uname -m)/yr-functionsystem-v0.5.0.tar.gz"}
+DATA_SYSTEM_CACHE=${DATA_SYSTEM_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/yr_cache/$(uname -m)/yr-datasystem-v0.6.0.tar.gz"}
+FUNCTION_SYSTEM_CACHE=${FUNCTION_SYSTEM_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/yr_cache/$(uname -m)/yr-functionsystem-v0.6.0.tar.gz"}
 function check_datasystem() {
     # check whether datasystem exist
     if [ ! -d "${YR_DATASYSTEM_BIN_DIR}"/output/sdk/cpp/include ]; then
