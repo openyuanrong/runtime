@@ -20,24 +20,35 @@
 
 namespace YR {
 
+/*!
+ * @enum DataType
+ * @brief Data type enumeration for collective communication operations.
+ */
 enum DataType : uint8_t {
-    INT = 0,
-    DOUBLE,
-    LONG,
-    FLOAT,
-
-    INVALID
+    INT = 0,    ///< Integer type (int).
+    DOUBLE,     ///< Double precision floating point type (double).
+    LONG,       ///< Long integer type (long).
+    FLOAT,      ///< Single precision floating point type (float).
+    INVALID     ///< Invalid data type.
 };
 
+/*!
+ * @var const std::unordered_map<DataType, int> DATA_TYPE_SIZE_MAP
+ * @brief Mapping from DataType to its size in bytes.
+ */
 const static std::unordered_map<DataType, int> DATA_TYPE_SIZE_MAP = {{DataType::INT, sizeof(int)},
                                                                      {DataType::DOUBLE, sizeof(double)},
                                                                      {DataType::LONG, sizeof(long)},
                                                                      {DataType::FLOAT, sizeof(float)}};
 
+/*!
+ * @enum ReduceOp
+ * @brief Reduction operator enumeration for collective communication operations.
+ */
 enum ReduceOp : uint8_t {
-    SUM = 0,
-    PRODUCT = 1,
-    MIN = 2,
-    MAX = 3,
+    SUM = 0,     ///< Sum operation.
+    PRODUCT = 1, ///< Product operation.
+    MIN = 2,     ///< Minimum operation.
+    MAX = 3,     ///< Maximum operation.
 };
 }  // namespace YR
