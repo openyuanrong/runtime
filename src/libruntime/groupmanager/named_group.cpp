@@ -15,14 +15,34 @@
  */
 
 #include "src/libruntime/groupmanager/named_group.h"
+#include "src/libruntime/utils/utils.h"
 
 namespace YR {
 namespace Libruntime {
+
 NamedGroup::NamedGroup(const std::string &name, const std::string &inputTenantId, GroupOpts &inputOpts,
                        std::shared_ptr<FSClient> client, std::shared_ptr<WaitingObjectManager> waitManager,
-                       std::shared_ptr<MemoryStore> memStore)
-    : Group(name, inputTenantId, inputOpts, client, waitManager, memStore)
+                       std::shared_ptr<MemoryStore> memStore, std::shared_ptr<InvokeOrderManager> invokeOrderMgr)
+    : Group(name, inputTenantId, inputOpts, client, waitManager, memStore), invokeOrderMgr_(invokeOrderMgr)
 {
+}
+
+CreateRequests NamedGroup::BuildCreateReqs()
+{
+    CreateRequests reqs;
+    reqs.set_tenantid(tenantId);
+    reqs.set_requestid(YR::utility::IDGenerator::GenRequestId());
+    reqs.set_traceid(createSpecs[0]->traceId);
+    for (auto spec : createSpecs) {
+        CreateRequest *req = reqs.add_requests();
+        *req = spec->requestCreate;
+    }
+    GroupOptions *options = reqs.mutable_groupopt();
+    options->set_groupname(groupName);
+    options->set_timeout(opts.timeout);
+    options->set_samerunninglifecycle(opts.sameLifecycle);
+    options->set_grouppolicy(ConvertStrategyToPolicy(opts.strategy));
+    return reqs;
 }
 
 void NamedGroup::CreateRespHandler(const CreateResponses &resps)
@@ -61,6 +81,7 @@ void NamedGroup::CreateNotifyHandler(const NotifyRequest &req)
                                                                        ModuleCode::CORE, req.message(), true));
         }
     } else {
+        NotifyInstances();
         for (auto &spec : createSpecs) {
             this->memStore_->SetReady(spec->returnIds[0].id);
         }
@@ -68,21 +89,14 @@ void NamedGroup::CreateNotifyHandler(const NotifyRequest &req)
     }
 }
 
-CreateRequests NamedGroup::BuildCreateReqs()
+void NamedGroup::NotifyInstances()
 {
-    CreateRequests reqs;
-    reqs.set_tenantid(tenantId);
-    reqs.set_requestid(YR::utility::IDGenerator::GenRequestId());
-    reqs.set_traceid(createSpecs[0]->traceId);
-    for (auto spec : createSpecs) {
-        CreateRequest *req = reqs.add_requests();
-        *req = spec->requestCreate;
+    if (!createSpecs[0]->opts.needOrder) {
+        return;
     }
-    GroupOptions *options = reqs.mutable_groupopt();
-    options->set_groupname(groupName);
-    options->set_timeout(opts.timeout);
-    options->set_samerunninglifecycle(opts.sameLifecycle);
-    return reqs;
+    for (auto &spec : createSpecs) {
+        this->invokeOrderMgr_->NotifyInvokeSuccess(spec);
+    }
 }
 
 void NamedGroup::SetTerminateError()

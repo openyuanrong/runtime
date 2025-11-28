@@ -49,8 +49,11 @@ void RangeGroup::HandleCreateResp(const CreateResponses &resps)
     if (!runFlag) {
         return;
     }
-    groupId = resps.groupid();
-    YRLOG_DEBUG("group id is {}", groupId);
+    {
+        std::lock_guard<std::mutex> lock(groupIdMtx);
+        groupId = resps.groupid();
+        YRLOG_DEBUG("group id is {}", groupId);
+    }
     if (resps.code() != common::ERR_NONE) {
         this->memStore_->SetError(createSpecs[0]->returnIds[0].id, ErrorInfo(static_cast<ErrorCode>(resps.code()),
                                                                              ModuleCode::CORE, resps.message(), true));

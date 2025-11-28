@@ -16,10 +16,10 @@
 set -e
 
 readonly USAGE="
-Usage: bash build.sh [-h] [-v <version>]
+Usage: bash build.sh [-h] [-v]
 
 Options:
-    -v, --version show version.
+    -v set version.
     -h show usage.
 "
 
@@ -28,21 +28,22 @@ OUTPUT_DIR="${PROJECT_DIR}/output"
 RUNTIME_OUTPUT_DIR="${PROJECT_DIR}/../output"
 POSIX_DIR="${PROJECT_DIR}/proto/posix"
 BUILD_TAGS=""
-VERSION=""
+VERSION="0.5.0"
 FLAGS='-extldflags "-fPIC -fstack-protector-strong -Wl,-z,now,-z,relro,-z,noexecstack,-s -Wall -Werror"'
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -v|--version)
-            if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-                VERSION="$2"
-                shift 2
-            fi
+while getopts "v:h" opt; do
+    case $opt in
+        v)
+            VERSION="$OPTARG"
             ;;
-      -h|--help)
-          echo -e "${USAGE}"
-          exit 0
-          ;;
+        h)
+            echo -e "${USAGE}"
+            exit 0
+            ;;
+        *)
+            echo "Invalid command"
+            exit 1
+            ;;
     esac
 done
 
@@ -56,6 +57,7 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 go env -w "GOFLAGS"="-mod=mod"
 
 echo "generating fs proto pb objects"
+mkdir -p "${OUTPUT_DIR}"
 protoc --proto_path=${POSIX_DIR} --go_out=${OUTPUT_DIR} --go-grpc_out=${OUTPUT_DIR} ${POSIX_DIR}/*.proto
 cp -ar ${OUTPUT_DIR}/yuanrong.org/kernel/pkg/ ${PROJECT_DIR}
 rm -rf "${OUTPUT_DIR}/yuanrong.org"
@@ -96,8 +98,9 @@ CC='gcc -fstack-protector-strong -D_FORTIFY_SOURCE=2 -O2' go build -tags="${BUIL
 "${OUTPUT_DIR}"/bin/collector "${PROJECT_DIR}"/cmd/collector/main.go
 
 cd "${OUTPUT_DIR}"
-tar -czvf yr-dashboard-v0.0.1.tar.gz ./*
+DASHBOARD_TAR_NAME="yr-dashboard-${VERSION}.tar.gz"
+tar -czvf "${DASHBOARD_TAR_NAME}" ./*
 mkdir -p "${RUNTIME_OUTPUT_DIR}"
-rm -rf "${RUNTIME_OUTPUT_DIR}/yr-dashboard-v0.0.1.tar.gz"
-cp yr-dashboard-v0.0.1.tar.gz "${RUNTIME_OUTPUT_DIR}"
+rm -rf "${RUNTIME_OUTPUT_DIR}/${DASHBOARD_TAR_NAME}"
+cp "${DASHBOARD_TAR_NAME}" "${RUNTIME_OUTPUT_DIR}"
 cd "${PROJECT_DIR}"

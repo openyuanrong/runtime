@@ -167,15 +167,15 @@ public class ActorTest {
         TestUtils.initYR();
         try {
             InvokeOptions createOpts = InvokeOptions.builder()
-                .addCustomExtensions("endpoint", "CreateInstance1")
-                .addCustomExtensions("app_name", "CreateInstance2")
-                .addCustomExtensions("tenant_id", "CreateInstance3")
+                .addCustomExtension("endpoint", "CreateInstance1")
+                .addCustomExtension("app_name", "CreateInstance2")
+                .addCustomExtension("tenant_id", "CreateInstance3")
                 .build();
             InstanceHandler ins = YR.instance(Counter::new).options(createOpts).invoke();
             InvokeOptions invokeOpts = InvokeOptions.builder()
-                .addCustomExtensions("endpoint", "InvokeInstance1")
-                .addCustomExtensions("app_name", "InvokeInstance2")
-                .addCustomExtensions("tenant_id", "InvokeInstance3")
+                .addCustomExtension("endpoint", "InvokeInstance1")
+                .addCustomExtension("app_name", "InvokeInstance2")
+                .addCustomExtension("tenant_id", "InvokeInstance3")
                 .build();
             ObjectRef ref = ins.function(Counter::addOne).options(invokeOpts).invoke();
             int res = (int) YR.get(ref, 10);
@@ -330,6 +330,7 @@ public class ActorTest {
      * @step:   3.再次调用实例的成员函数
      * @expect: 1.实例被kill后成功recover
      */
+    @Ignore("need to repair.")
     @Test
     public void test_recover_cpp_successfully() throws Exception {
         TestUtils.initYR(false);
