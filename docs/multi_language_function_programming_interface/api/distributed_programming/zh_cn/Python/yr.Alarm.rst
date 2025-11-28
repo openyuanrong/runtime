@@ -7,6 +7,9 @@ yr.Alarm
 
     用于设置和管理告警信息。
 
+    .. note::
+        如果启动 yr 时未配置 `runtime_metrics_config`，则样例无法使用。
+
     参数：
         - **name** (str) - 名称。
         - **description** (str) - 描述。
