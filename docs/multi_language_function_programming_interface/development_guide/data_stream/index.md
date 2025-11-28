@@ -1,14 +1,5 @@
 # 数据流
 
-```{eval-rst}
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :hidden:
-
-   interface
-```
-
 openYuanrong提供了基于 Publish-SubScribe(pub-sub) 模型的数据流。通过数据流，应用可实现函数间无界数据流的数据交换，支持复杂的数据交互关系。同时，通过解耦数据生产方和消费方的同步连接关系，支持数据生产方和消费方按需异步调度。
 
 数据流中有四个关键概念：生产者（producer）、消费者（consumer）、流（stream）、数据项（element）。
