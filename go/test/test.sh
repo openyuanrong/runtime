@@ -56,3 +56,6 @@ npm run coverage
 
 # collector test
 sh "${CUR_DIR}/collector/test.sh"
+
+# common test
+sh "${CUR_DIR}/common/test.sh"

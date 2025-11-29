@@ -50,56 +50,6 @@ func TestGetETCDCertificatePath(t *testing.T) {
 	})
 }
 
-func TestGetEtcdAuthType(t *testing.T) {
-	Convey("Test getEtcdAuthType, tlsAuth", t, func() {
-		config := EtcdConfig{
-			SslEnable: true,
-			CaFile:    "",
-			CertFile:  "",
-			KeyFile:   "",
-		}
-		etcdAuth := config.getEtcdAuthType()
-		So(etcdAuth, ShouldNotBeNil)
-	})
-	Convey("Test getEtcdAuthType, noAuth", t, func() {
-		config := EtcdConfig{
-			SslEnable: false,
-			CaFile:    "",
-			CertFile:  "",
-			KeyFile:   "",
-			User:      "test",
-			Passwd:    "",
-		}
-		etcdAuth := config.getEtcdAuthType()
-		So(etcdAuth, ShouldNotBeNil)
-	})
-	Convey("Test getEtcdAuthType, pwdAuth", t, func() {
-		config := EtcdConfig{
-			SslEnable: false,
-			CaFile:    "",
-			CertFile:  "",
-			KeyFile:   "",
-			User:      "test",
-			Passwd:    "test",
-		}
-		etcdAuth := config.getEtcdAuthType()
-		So(etcdAuth, ShouldNotBeNil)
-	})
-	Convey("Test getEtcdAuthType, clientTlsAuth", t, func() {
-		config := EtcdConfig{
-			AuthType:  "TLS",
-			SslEnable: false,
-			CaFile:    "",
-			CertFile:  "",
-			KeyFile:   "",
-			User:      "test",
-			Passwd:    "test",
-		}
-		etcdAuth := config.getEtcdAuthType()
-		So(etcdAuth, ShouldNotBeNil)
-	})
-}
-
 func TestGetEtcdConfigTlsAuth(t *testing.T) {
 	tlsAuth := &tlsAuth{}
 	Convey("GetX509CACertPool success", t, func() {

@@ -5,6 +5,8 @@ import (
 	"encoding/pem"
 	"testing"
 
+	"github.com/agiledragon/gomonkey/v2"
+
 	mockUtils "yuanrong.org/kernel/pkg/common/faas_common/utils"
 )
 

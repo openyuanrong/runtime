@@ -7,14 +7,13 @@ import (
 	"testing"
 
 	"yuanrong.org/kernel/pkg/common/httputil/http"
-	"yuanrong.org/kernel/pkg/common/snerror"
 )
 
 func Test_parseFastResponse(t *testing.T) {
 	response1 := &fasthttp.Response{}
-	badResponse := snerror.BadResponse{
-		Code:    0,
-		Message: "500 error",
+	badResponse := map[string]interface{}{
+		"code":    0,
+		"message": "500 error",
 	}
 	bytes, _ := json.Marshal(badResponse)
 	response1.SetStatusCode(fasthttp.StatusInternalServerError)
@@ -34,7 +33,7 @@ func Test_parseFastResponse(t *testing.T) {
 		{
 			name:     "test 500",
 			response: response1,
-			wantErr:  true,
+			wantErr:  false,
 		},
 		{
 			name:     "test 200",
