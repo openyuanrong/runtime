@@ -43,7 +43,7 @@ describe('ClusterChart.initChartWithProm', () => {
                     {
                         'hostname': 'dggphis232340-2846342',
                         'status': 'healthy',
-                        'address': 'x.x.x.x',
+                        'address': '127.0.0.1',
                         'cap_cpu': 10000,
                         'cap_mem': 38912,
                         'alloc_cpu': 10000,
@@ -54,9 +54,9 @@ describe('ClusterChart.initChartWithProm', () => {
                 'components': {
                     'dggphis232340-2846342': [
                         {
-                            'hostname': 'function-agent-x.x.x.x-58866',
+                            'hostname': 'function-agent-127.0.0.1-58866',
                             'status': 'alive',
-                            'address': 'x.x.x.x:58866',
+                            'address': '127.0.0.1:58866',
                             'cap_cpu': 10000,
                             'cap_mem': 38912,
                             'alloc_cpu': 10000,
@@ -75,9 +75,9 @@ describe('ClusterChart.initChartWithProm', () => {
                     'create_time': '1762428525',
                     'job_id': 'job-his232340-2846342',
                     'pid': '2855872',
-                    'ip': 'x.x.x.x:22773',
+                    'ip': '127.0.0.1:22773',
                     'node_id': 'dggphis232340-2846342',
-                    'agent_id': 'function-agent-x.x.x.x-58866',
+                    'agent_id': 'function-agent-127.0.0.1-58866',
                     'parent_id': 'driver-faas-frontend-dggphis232340-2846342',
                     'required_cpu': 500,
                     'required_mem': 500,

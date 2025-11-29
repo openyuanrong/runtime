@@ -49,7 +49,7 @@ describe('JobInfo.initJobInfo', () => {
             'submission_id': 'app-ab00977c-682e-4b5e-9cb3-f928c55a7d27',
             'driver_info': {
                 'id': 'app-ab00977c-682e-4b5e-9cb3-f928c55a7d27',
-                'node_ip_address': 'x.x.x.x',
+                'node_ip_address': '127.0.0.1',
                 'pid': '249351',
             },
             'status': 'FAILED',
