@@ -94,7 +94,8 @@ tar -zxvf *datasystem*.tar.gz -C ${OUTPUT_DIR}/openyuanrong/
 mkdir -p ${OUTPUT_DIR}/openyuanrong/datasystem/deploy
 cp -fr ${BASE_DIR}/../deploy/data_system/* ${OUTPUT_DIR}/openyuanrong/datasystem/deploy/
 
-cp -fr ${BASE_DIR}/../deploy/process ${OUTPUT_DIR}/openyuanrong
+cp -fr ${BASE_DIR}/../deploy ${OUTPUT_DIR}/openyuanrong
+rm -rf ${OUTPUT_DIR}/openyuanrong/deploy/data_system
 
 frontend_filename=$(ls *frontend*.tar.gz)
 if [ -n "${frontend_filename}" ]; then
@@ -122,7 +123,8 @@ if [ -d ${OUTPUT_DIR}/openyuanrong/datasystem/ ]; then
   find ${OUTPUT_DIR}/openyuanrong/datasystem/ -type f -exec chmod 550 {} \;
 fi
 
-mv ${OUTPUT_DIR}/openyuanrong/functionsystem/third_party ${OUTPUT_DIR}/openyuanrong/
+mv ${OUTPUT_DIR}/openyuanrong/functionsystem/deploy/third_party ${OUTPUT_DIR}/openyuanrong/
+mv ${OUTPUT_DIR}/openyuanrong/functionsystem/deploy/function_system/* ${OUTPUT_DIR}/openyuanrong/functionsystem/deploy/
 if [ -d ${OUTPUT_DIR}/openyuanrong/third_party/ ]; then
   find ${OUTPUT_DIR}/openyuanrong/third_party/ -type f -exec chmod 550 {} \;
 fi

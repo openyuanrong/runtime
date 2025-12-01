@@ -43,7 +43,7 @@ MODULES="runtime"
 bash -x ${BASE_DIR}/download_opensource.sh -M $MODULES -T $THIRD_PARTY_DIR
 RUNTIME_THIRD_PARTY_CACHE=${RUNTIME_THIRD_PARTY_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/runtime_deps/"}
 DATA_SYSTEM_CACHE=${DATA_SYSTEM_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/yr_cache/$(uname -m)/yr-datasystem-v0.6.0.tar.gz"}
-FUNCTION_SYSTEM_CACHE=${FUNCTION_SYSTEM_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/yr_cache/$(uname -m)/yr-functionsystem-v0.6.0.tar.gz"}
+METRICS_CACHE=${METRICS_CACHE:-"https://build-logs.openeuler.openatom.cn:38080/temp-archived/openeuler/openYuanrong/yr_cache/$(uname -m)/yr-metrics-v0.6.0.tar.gz"}
 function check_datasystem() {
     # check whether datasystem exist
     if [ ! -d "${YR_DATASYSTEM_BIN_DIR}"/output/sdk/cpp/include ]; then
@@ -83,10 +83,8 @@ function download_metrics() {
     METRICS_OUT_DIR="${YR_METRICS_BIN_DIR}/"
     mkdir -p "${METRICS_OUT_DIR}"
     pushd "${METRICS_OUT_DIR}"
-    wget -O functionsystem.tar.gz ${FUNCTION_SYSTEM_CACHE}
-    tar --no-same-owner -zxf functionsystem.tar.gz
-    mv functionsystem/metrics/* .
-    rm -rf functionsystem
+    wget -O metrics.tar.gz ${METRICS_CACHE}
+    tar --no-same-owner -zxf metrics.tar.gz
     popd
 }
 
@@ -114,8 +112,7 @@ function compile_functionsystem() {
     cd ${YR_FUNCTIONSYSTEM_BIN_DIR}
     bash build.sh
     cd output
-    tar -xf ${YR_FUNCTIONSYSTEM_BIN_DIR}/output/yr-functionsystem*.tar.gz
-    cp -r ${YR_FUNCTIONSYSTEM_BIN_DIR}/output/functionsystem/metrics ${RUNTIME_SRC_DIR}/
+    tar -xf ${YR_FUNCTIONSYSTEM_BIN_DIR}/output/yr-metrics*.tar.gz -C ${RUNTIME_SRC_DIR}/
     cp -f ${YR_FUNCTIONSYSTEM_BIN_DIR}/output/yr-functionsystem*.tar.gz $RUNTIME_OUTPUT_DIR/
 }
 
