@@ -70,7 +70,7 @@ function download_datasystem() {
     mkdir -p "${DS_OUT_DIR}"
     pushd "${DS_OUT_DIR}"
     wget -O datasystem.tar.gz ${DATA_SYSTEM_CACHE}
-    tar --no-same-owner -zxf datasystem.tar.gz
+    tar --no-same-owner -zxf datasystem.tar.gz --strip-components=1
     popd
 }
 
@@ -102,7 +102,7 @@ function compile_datasystem() {
     ds_filename=$(ls *.tar.gz)
     tar -xf $ds_filename -C ${YR_DATASYSTEM_BIN_DIR}/output/
     mkdir -p ${YR_FUNCTIONSYSTEM_BIN_DIR}/datasystem/output/
-    tar -xf $ds_filename -C ${YR_FUNCTIONSYSTEM_BIN_DIR}/datasystem/output/
+    tar -xf $ds_filename -C ${YR_FUNCTIONSYSTEM_BIN_DIR}/datasystem/output/ --strip-components=1
     cp -f ${ds_filename} $RUNTIME_OUTPUT_DIR/
 }
 
