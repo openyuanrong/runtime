@@ -23,7 +23,7 @@ Usage: bash build.sh [-thdDcCrvPSbEm:]
 Options:
     -v the version of yuanrong
 "
-while getopts 'v:' opt; do
+while getopts ":v:" opt; do
     case $opt in
         v)
             if [ -n "$OPTARG" ]; then
