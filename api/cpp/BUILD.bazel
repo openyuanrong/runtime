@@ -23,12 +23,15 @@ cc_library(
         "src/utils/*.cpp",
         "src/executor/*.h",
         "src/executor/*.cpp",
+        "src/collective/*.h",
+        "src/collective/*.cpp",
     ]) + ["src/utils/version.h"],
     hdrs = glob([
         "include/yr/*.h",
         "include/yr/api/*.h",
         "include/yr/parallel/*.h",
         "include/yr/parallel/detail/*.h",
+        "include/yr/collective/*.h",
     ]),
     copts = COPTS,
     linkopts = ["-lstdc++fs"],
@@ -43,6 +46,7 @@ cc_library(
         "@securec",
         "@nlohmann_json",
         "@yaml-cpp",
+        "@gloo//:gloo",
     ],
     alwayslink = True,
 )
@@ -64,6 +68,7 @@ cc_library(
     hdrs = glob([
         "include/yr/*.h",
         "include/yr/api/*.h",
+        "include/yr/collective/*.h",
         "include/yr/parallel/*.h",
         "include/yr/parallel/detail/*.h",
     ]),
@@ -160,6 +165,7 @@ genrule(
         ":cpp_strip",
         "//:grpc_strip",
         "@boringssl//:shared",
+        "@gloo//:shared",
         ":cpp_include",
     ],
     outs = ["yr_cpp_pkg.out"],
@@ -214,6 +220,7 @@ genrule(
         chrpath -d $(locations :cpp_strip) $(locations //:grpc_strip) &&
         cp -rf $(locations :cpp_strip) $(locations //:grpc_strip) $$CPP_SDK_DIR/lib/ &&
         cp -rf $(locations :cpp_strip) $$CPP_SDK_DIR/bin/ &&
+        cp -rf $(locations @gloo//:shared) $$CPP_SDK_DIR/lib/ &&
         rm -rf $$CPP_SDK_DIR/bin/libyr-api.so $$CPP_SDK_DIR/bin/libfunctionsdk.so
         cp -rf $$BASE_DIR/api/cpp/include $$CPP_SDK_DIR/ &&
         DATASYSTEM_DIR=$$BASE_DIR/external/datasystem_sdk/cpp &&
