@@ -256,8 +256,14 @@ docker run \
 
 3. 安装 openYuanrong
 
+   openYuanrong 目前支持在Linux x86_64 及 aarch64（ARM）上安装。
+
    ```bash
-   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/openyuanrong-0.5.0-cp311-cp311-manylinux_2_34_x86_64.whl
+   # 在 Linux x86_64 安装
+   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/openyuanrong-0.6.0-cp311-cp311-manylinux_2_34_x86_64.whl
+
+   # 在 aarch64（ARM）上安装
+   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/openyuanrong-0.6.0-cp311-cp311-manylinux_2_34_aarch64.whl
 
    # 安装数据系统 SDK
    pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/openyuanrong-datasystem-0.5.0-cp311-cp311-manylinux2014_x86_64.whl
