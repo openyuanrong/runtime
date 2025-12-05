@@ -35,6 +35,6 @@ yr.config.ResourceGroupOptions
     :hidden:
 
     yr.config.ResourceGroupOptions.__init__
-    yr.config.ResourceGroupOptions.bundle_index
     yr.config.ResourceGroupOptions.resource_group_name
+    yr.config.ResourceGroupOptions.bundle_index
 
