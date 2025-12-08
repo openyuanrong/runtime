@@ -91,6 +91,8 @@ tar -zxvf yr-runtime-*.tar.gz -C ${OUTPUT_DIR}/openyuanrong
 tar -zxvf *functionsystem*.tar.gz -C ${OUTPUT_DIR}/openyuanrong
 
 tar -zxvf *datasystem*.tar.gz -C ${OUTPUT_DIR}/openyuanrong/
+rm -rf ${OUTPUT_DIR}/openyuanrong/datasystem/sdk/DATASYSTEM_SYM
+rm -rf ${OUTPUT_DIR}/openyuanrong/datasystem/service/DATASYSTEM_SYM
 mkdir -p ${OUTPUT_DIR}/openyuanrong/datasystem/deploy
 cp -fr ${BASE_DIR}/../deploy/data_system/* ${OUTPUT_DIR}/openyuanrong/datasystem/deploy/
 
