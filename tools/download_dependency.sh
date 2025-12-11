@@ -107,7 +107,8 @@ function compile_functionsystem() {
         return
     fi
     cd ${YR_FUNCTIONSYSTEM_BIN_DIR}
-    bash build.sh
+    bash run.sh build
+    bash run.sh pack
     cd output
     tar -xf ${YR_FUNCTIONSYSTEM_BIN_DIR}/output/metrics.tar.gz -C ${RUNTIME_SRC_DIR}/
     cp -f ${YR_FUNCTIONSYSTEM_BIN_DIR}/output/yr-functionsystem*.tar.gz $RUNTIME_OUTPUT_DIR/
