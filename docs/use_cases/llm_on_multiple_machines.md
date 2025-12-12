@@ -163,7 +163,7 @@ export DDP=1
 
 # 设置 npu 卡的数量，不设置则为使用全部的卡
 # 设置 ASCEND_RT_VISIBLE_DEVICES=1,3 表示使用1、3卡
-export ASCEND_RT_VISIBLE_DEVICES=1,3 
+# export ASCEND_RT_VISIBLE_DEVICES=1,3 
 ```
 
 在 openYuanrong 主节点所在容器 `/workspace/tools/deploy` 目录下，执行如下命令部署：
