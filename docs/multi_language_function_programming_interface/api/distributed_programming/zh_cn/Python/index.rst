@@ -316,6 +316,19 @@ Python
      - 自动部署配置类。
 
 
+组 API
+----------------------
+
+.. list-table::
+   :header-rows: 0
+   :widths: 30 70
+
+   * - :doc:`yr.group`
+     - 一个用于管理实例分组生命周期的类。
+   * - :doc:`yr.config.GroupOptions`
+     - 分组实例调度的配置选项。
+
+
 KV 缓存 API
 -------------------
 
