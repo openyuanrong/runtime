@@ -39,7 +39,7 @@
 | Node.js           | 开源第三方 | 编译构建    | 20.19.0        | 20.19.0         |
 
 :::{tip}
-使用 openeuler_22.03_LTS_sp4 环境执行命令安装编译工具
+我们提供了在 openeuler_22.03_LTS_sp4 环境上使用的脚本，方便快速安装编译工具，参考以下命令下载并使用。
 ```bash
 yum install -y wget
 wget https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/build_tools/openeuler_22.03_LTS/check_tools.sh
