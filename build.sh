@@ -12,24 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+
 
 set -e
 source /etc/profile.d/*.sh
 
 readonly USAGE="
-Usage: bash build.sh [-thdDcCrvPSbEm:]
+Usage: bash build.sh [-thdDcCrvPSbEm:j:G]
 
 Options:
     -t run test.
@@ -52,6 +41,7 @@ Options:
     -m mem limit(MB)
     -h usage.
     -j concurrency limit
+    -G enable gloo collective operations (default: disabled)
 "
 
 BASE_DIR=$(
@@ -76,6 +66,7 @@ SANITIZER="off"
 BAZEL_OPTIONS_ENV=""
 SECBRELLA_CCE="OFF"
 PACKAGE_ALL="false"
+ENABLE_GLOO="false"
 LD_LIBRARY_PATH=/opt/buildtools/python3.7/lib:/opt/buildtools/python3.9/lib:/opt/buildtools/python3.11/lib:${LD_LIBRARY_PATH}
 BOOST_VERSION="1.87.0"
 export BUILD_ALL="false"
@@ -215,7 +206,7 @@ function build_multi_python_version() {
                   continue
                 fi
                 log_info "start build $PYTHON_BIN_PATH "
-                BAZEL_PYTHON_OPTIONS_ENV="${BAZEL_OPTIONS_ENV} --action_env=BUILD_VERSION=${BUILD_VERSION} --action_env=PYTHON3_BIN_PATH=$PYTHON_BIN_PATH"
+                BAZEL_PYTHON_OPTIONS_ENV="${BAZEL_OPTIONS_ENV} --action_env=BUILD_VERSION=${BUILD_VERSION} --action_env=PYTHON3_BIN_PATH=$PYTHON_BIN_PATH --define ENABLE_GLOO=${ENABLE_GLOO}"
                 BAZEL_PYTHON_OPTIONS="${BAZEL_OPTIONS} ${BAZEL_OPTIONS_CONFIG} ${BAZEL_PYTHON_OPTIONS_ENV}"
                 cd $BASE_DIR
                 rm -rf ${BASE_DIR}/api/python/yr/fnruntime.cpython-*.so
@@ -251,7 +242,7 @@ function check_sanitizers() {
   fi
 }
 
-while getopts 'athr:v:S:DcCgPET:p:bm:j:g' opt; do
+while getopts 'athr:v:S:DcCgPET:p:bm:j:gG' opt; do
     case "$opt" in
     a)
         BUILD_ALL="true"
@@ -329,6 +320,9 @@ while getopts 'athr:v:S:DcCgPET:p:bm:j:g' opt; do
     g)
         BAZEL_TARGETS="//api/python:cp_yr_proto //src/proto:libruntime_cc_proto //src/proto:libruntime_java_proto //src/proto:socket_cc_proto //src/proto:socket_java_proto"
         ;;
+    G)
+        ENABLE_GLOO="true"
+        ;;
     *)
         log_error "invalid command: $opt"
         usage
@@ -350,7 +344,7 @@ sed -i "s/<version>1.0.0<\/version>/<version>${BUILD_VERSION}<\/version>/" $API_
 pip3.9 install wheel==0.36.2
 build_multi_python_version
 
-BAZEL_OPTIONS_ENV="${BAZEL_OPTIONS_ENV} --action_env=BOOST_VERSION=$BOOST_VERSION --action_env=GOPATH=$(go env GOPATH) --action_env=GOEXPERIMENT=$(go env GOEXPERIMENT) --action_env=GOCACHE=$(go env GOCACHE) --action_env=BUILD_VERSION=${BUILD_VERSION} --action_env=PYTHON3_BIN_PATH=$PYTHON3_BIN_PATH"
+BAZEL_OPTIONS_ENV="${BAZEL_OPTIONS_ENV} --action_env=BOOST_VERSION=$BOOST_VERSION --action_env=GOPATH=$(go env GOPATH) --action_env=GOEXPERIMENT=$(go env GOEXPERIMENT) --action_env=GOCACHE=$(go env GOCACHE) --action_env=BUILD_VERSION=${BUILD_VERSION} --action_env=PYTHON3_BIN_PATH=$PYTHON3_BIN_PATH --define ENABLE_GLOO=${ENABLE_GLOO}"
 BAZEL_OPTIONS="${BAZEL_OPTIONS} ${BAZEL_OPTIONS_CONFIG} ${BAZEL_OPTIONS_ENV}"
 
 cd $BASE_DIR

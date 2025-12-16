@@ -72,6 +72,15 @@ docker run \
 
 1. 为 vLLM Ascend 打补丁
 
+   :::{Note}
+
+   首先配置您的 git 用户名和邮箱（通过 git config --list 查看是否已配置）。如下所示：
+
+   git config --global user.name "your name"
+   git config --global user.email "email@your_email"
+
+   :::
+
    ```bash
    cd /vllm-workspace/vllm-ascend
    git am /workspace/tools/patch/0001-implement-yr-datasystem-connector-and-support-multimoda.patch
@@ -80,11 +89,22 @@ docker run \
 
 2. 安装 openYuanrong
 
+   在 Linux x86_64 环境上：
+   
    ```bash
-   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/openyuanrong-0.5.0-cp311-cp311-manylinux_2_34_x86_64.whl
+   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/release/0.6.0/linux/x86_64/openyuanrong-0.6.0-cp311-cp311-manylinux_2_34_x86_64.whl
 
    # 安装数据系统 SDK
-   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/openyuanrong-datasystem-0.5.0-cp311-cp311-manylinux2014_x86_64.whl
+   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/release/0.6.0/linux/x86_64/openyuanrong_datasystem-0.6.0-cp311-cp311-manylinux_2_34_x86_64.whl
+   ```
+   
+   在 Linux aarch64（ARM）环境上：
+
+   ```bash
+   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/release/0.6.0/linux/aarch64/openyuanrong-0.6.0-cp311-cp311-manylinux_2_34_aarch64.whl
+
+   # 安装数据系统 SDK
+   pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/release/0.6.0/linux/aarch64/openyuanrong_datasystem-0.6.0-cp311-cp311-manylinux_2_34_aarch64.whl
    ```
 
 3. 部署 openYuanrong
@@ -124,6 +144,7 @@ export SERVER_PORT=9000
 
 # 模型文件路径
 export MODEL_PATH="/workspace/models/qwen2.5_7B"
+# 将 openYuanrong 模型部署脚本所在目录加入 Python 模块搜索路径
 export PYTHONPATH=$PYTHONPATH:/workspace/tools/deploy
 
 # 启用 vLLM 的 v1 API 模式
@@ -136,7 +157,7 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 # 替换 YR_INSTALL_PATH 为 openYuanrong 安装路径，可使用 yr version 命令查看
 # 例如：/usr/local/Python-3.11.9/lib/python3.11/site-packages/yr/inner
-export LD_LIBRARY_PATH=${YR_INSTALL_PATH}/function_system/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=${YR_INSTALL_PATH}/functionsystem/lib:$LD_LIBRARY_PATH
 export HCL_OP_EXPANSION_MODE="AIV"
 # 是否启用 openYuanrong 多级缓存前缀匹配能力，值为 1 表示启动
 export USING_PREFIX_CONNECTOR=1
@@ -148,6 +169,10 @@ export PTP=4
 export DTP=4
 export PDP=1
 export DDP=1
+
+# 设置 npu 卡的数量，不设置则为使用全部的卡
+# 设置 ASCEND_RT_VISIBLE_DEVICES=1,3 表示使用1、3卡
+# export ASCEND_RT_VISIBLE_DEVICES=1,3 
 ```
 
 在 openYuanrong 主节点所在容器 `/workspace/tools/deploy` 目录下，执行如下命令部署：

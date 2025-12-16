@@ -361,10 +361,6 @@ std::pair<ErrorInfo, std::string> Libruntime::CreateInstance(const YR::Libruntim
     }
 
     invokeOrderMgr->CreateInstance(spec);
-    auto insId = spec->GetNamedInstanceId();
-    if (!insId.empty()) {
-        spec->returnIds[0].id = insId;
-    }
     memStore->AddReturnObject(spec->returnIds);
     dependencyResolver->ResolveDependencies(spec, [this, spec, returnObjs](const ErrorInfo &err) {
         if (err.OK()) {
@@ -445,12 +441,6 @@ ErrorInfo Libruntime::InvokeByInstanceId(const YR::Libruntime::FunctionMeta &fun
     auto spec = std::make_shared<InvokeSpec>(runtimeContext->GetJobId(), funcMeta, returnObjs, std::move(invokeArgs),
                                              libruntime::InvokeType::InvokeFunction, std::move(traceId),
                                              std::move(requestId), instanceId, opts);
-    if (spec->opts.isGetInstance) {
-        YRLOG_DEBUG("this is not normal member function invoke, redefine invoke type, name is {}, ns is {}",
-                    funcMeta.name, funcMeta.ns);
-        spec->invokeType = libruntime::InvokeType::GetNamedInstanceMeta;
-        spec->invokeInstanceId = instanceId;
-    }
     err = PreProcessArgs(spec);
     if (err.Code() != ErrorCode::ERR_OK) {
         YRLOG_ERROR("pre process failed, req id: {}, code: {}, message: {}", spec->requestId,
@@ -808,12 +798,6 @@ std::pair<ErrorInfo, std::vector<std::string>> Libruntime::DecreaseReferenceRaw(
     }
     SetTraceId();
     return dsClients.dsObjectStore->DecreGlobalReference(objIds, remoteId);
-}
-
-ErrorInfo Libruntime::ReleaseGRefs(const std::string &remoteId)
-{
-    SetTraceId();
-    return memStore->ReleaseGRefs(remoteId);
 }
 
 // timeout < 0 : wait without timeout

@@ -44,7 +44,8 @@ ds_spill_enable:,ds_spill_directory:,ds_spill_size_limit:,\
 ds_rpc_thread_num:,ds_node_timeout_s:,ds_node_dead_timeout_s:,\
 ds_heartbeat_interval_ms:,ds_client_dead_timeout_s:,ds_max_client_num:,ds_memory_reclamation_time_second:,\
 ds_arena_per_tenant:,ds_enable_fallocate:,ds_enable_huge_tlb:,ds_enable_thp:,\
-enable_faas_frontend:,faas_frontend_http_port:,faas_frontend_grpc_port:,\
+enable_faas_frontend:,faas_frontend_http_port:,faas_frontend_grpc_port:,enable_function_scheduler:,\
+enable_meta_service:,meta_service_port:,\
 function_agent_port:,function_proxy_port:,\
 function_proxy_grpc_port:,global_scheduler_port:,runtime_init_port:,\
 function_agent_litebus_thread:,function_master_litebus_thread:,function_proxy_litebus_thread:,\
@@ -124,7 +125,7 @@ STATUS_COLLECT_INTERVAL=300
 ENABLE_TRACE=false
 ENABLE_METRICS=true
 METRICS_CONFIG=""
-METRICS_CONFIG_FILE=$(readlink -m '${BASE_DIR}/../../../function_system/config/metrics_config.json')
+METRICS_CONFIG_FILE=$(readlink -m '${BASE_DIR}/../../../functionsystem/config/metrics/metrics_config.json')
 RUNTIME_METRICS_CONFIG=""
 STATE_STORAGE_TYPE="datasystem"
 PULL_RESOURCE_INTERVAL=1000
@@ -177,6 +178,7 @@ RUNTIME_INIT_PORT=21006
 DASHBOARD_PORT=9080
 DASHBOARD_GRPC_PORT=9081
 COLLECTOR_PORT=9082
+META_SERVICE_PORT=31111
 PROMETHEUS_ADDRESS=""
 METRICS_COLLECTOR_TYPE="proc"
 MERGE_PROCESS_ENABLE="true"
@@ -221,6 +223,7 @@ ENABLE_DASHBOARD="false"
 ENABLE_COLLECTOR="false"
 
 ENABLE_META_STORE="false"
+ENABLE_META_SERVICE="false"
 ENABLE_PERSISTENCE="false"
 META_STORE_MODE="local"
 META_STORE_EXCLUDED_KEYS=","
@@ -229,11 +232,12 @@ ENABLE_INHERIT_ENV="false"
 IS_PARTIAL_WATCH_INSTANCES="false"
 META_STORE_MAX_FLUSH_CONCURRENCY=100
 META_STORE_MAX_FLUSH_BATCH_SIZE=50
-readonly JEMALLOC_LIB_PATH=$(readlink -m "${BASE_DIR}/../../function_system/lib/libjemalloc.so")
+readonly JEMALLOC_LIB_PATH=$(readlink -m "${BASE_DIR}/../../functionsystem/lib/libjemalloc.so")
 # Faas-pattern Configuration
 ENABLE_FAAS_FRONTEND="false"
 FAAS_FRONTEND_HTTP_PORT=8888
 FAAS_FRONTEND_GRPC_PORT=31223
+ENABLE_FUNCTION_SCHEDULER="false"
 # Data System Configuration
 DS_MASTER_IP=""
 DS_MASTER_PORT=12123
@@ -427,6 +431,8 @@ function usage() {
   echo -e "     --enable_print_perf                                 function proxy enable to print perf info"
   echo -e "     --enable_dashboard                                  for to enable dashboard(default false)"
   echo -e "     --enable_collector                                  for to enable collector(default false)"
+  echo -e "     --enable_meta_service                               for to enable meta service(default false)"
+  echo -e "     --meta_service_port                                 meta_service port (default 31111)"
   echo -e "     --enable_meta_store                                 for to enable meta store(default false)"
   echo -e "     --enable_persistence                                enable meta store to persist into etcd (default false)"
   echo -e "     --meta_store_max_flush_concurrency                  max flush concurrency for meta store backup(default 1000)"
@@ -441,6 +447,7 @@ function usage() {
   echo -e "     --enable_faas_frontend                              enable faasfrontend, options:true/false (default false)"
   echo -e "     --faas_frontend_http_port                           faas frontend http port (default 8888)"
   echo -e "     --faas_frontend_grpc_port                           faas frontend grpc port (default 31223)"
+  echo -e "     --enable_function_scheduler                         enable function scheduler, options:true/false (default false)"
   echo -e "     --schedule_relaxed                                  enable the relaxed scheduling policy. When the relaxed number of available nodes or pods is selected, the scheduling progress exits without traversing all nodes or pods.(default 1)"
   echo -e "     --max_priority                                      schedule max priority (default 0)"
   echo -e "     --enable_preemption                                 enable schedule preemption while higher priority, only valid while max_priority > 0 (default false)"
@@ -585,6 +592,9 @@ function parse_opt() {
     --enable_faas_frontend) ENABLE_FAAS_FRONTEND=$2 && shift 2 ;;
     --faas_frontend_http_port) FAAS_FRONTEND_HTTP_PORT=$2 && port_policy_table["faas_frontend_http_port"]="FIX" && shift 2 ;;
     --faas_frontend_grpc_port) FAAS_FRONTEND_GRPC_PORT=$2 && port_policy_table["faas_frontend_grpc_port"]="FIX" && shift 2 ;;
+    --enable_function_scheduler) ENABLE_FUNCTION_SCHEDULER=$2 && shift 2 ;;
+    --enable_meta_service) ENABLE_META_SERVICE=$2 && shift 2 ;;
+    --meta_servce_port) META_SERVICE_PORT=$2 && port_policy_table["meta_service_port"]="FIX" && shift 2 ;;
     --min_instance_cpu_size) MIN_INSTANCE_CPU_SIZE=$2 && shift 2 ;;
     --min_instance_memory_size) MIN_INSTANCE_MEMORY_SIZE=$2 && shift 2 ;;
     --max_instance_cpu_size) MAX_INSTANCE_CPU_SIZE=$2 && shift 2 ;;
@@ -684,6 +694,7 @@ function parse_opt() {
     --dashboard_port) DASHBOARD_PORT=$2 && port_policy_table["dashboard_port"]="FIX" && shift 2 ;;
     --dashboard_grpc_port) DASHBOARD_GRPC_PORT=$2 && port_policy_table["dashboard_grpc_port"]="FIX" && shift 2 ;;
     --collector_port) COLLECTOR_PORT=$2 && port_policy_table["collector_port"]="FIX" && shift 2 ;;
+    --meta_service_port) META_SERVICE_PORT=$2 && port_policy_table["meta_service_port"]="FIX" && shift 2 ;;
     --prometheus_address) PROMETHEUS_ADDRESS=$2 && shift 2 ;;
     --schedule_relaxed) SCHEDULE_RELAXED=$2 && shift 2 ;;
     --memory_detection_interval) MEMORY_DETECTION_INTERVAL=$2 && shift 2 ;;
@@ -1415,8 +1426,10 @@ function export_config() {
   export ENABLE_DASHBOARD DASHBOARD_PORT DASHBOARD_GRPC_PORT PROMETHEUS_ADDRESS
   # collector
   export ENABLE_COLLECTOR COLLECTOR_PORT
+  # meta_service
+  export ENABLE_META_SERVICE META_SERVICE_PORT
   # faas
-  export ENABLE_FAAS_FRONTEND FAAS_FRONTEND_HTTP_PORT FAAS_FRONTEND_GRPC_PORT
+  export ENABLE_FAAS_FRONTEND FAAS_FRONTEND_HTTP_PORT FAAS_FRONTEND_GRPC_PORT ENABLE_FUNCTION_SCHEDULER
 }
 
 function main() {

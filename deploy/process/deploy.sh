@@ -19,8 +19,8 @@ BASE_DIR=$(
   cd "$(dirname "$0")"
   pwd
 )
-FUNCTION_SYSTEM_PATH=${BASE_DIR}/../../function_system
-DATA_SYSTEM_PATH=${BASE_DIR}/../../data_system
+FUNCTION_SYSTEM_PATH=${BASE_DIR}/../../functionsystem
+DATA_SYSTEM_PATH=${BASE_DIR}/../../datasystem
 THIRD_PARTY_PATH=${BASE_DIR}/../../third_party
 ETCDCTL_PATH=${THIRD_PARTY_PATH}/etcd/etcdctl
 ETCD_LD_PATH=${THIRD_PARTY_PATH}/etcd/lib:${LD_LIBRARY_PATH}
@@ -513,6 +513,14 @@ function start_faas_frontend() {
   check_and_set_component_checklist "faas_frontend" $FAAS_FRONTEND_PID
 }
 
+function start_function_scheduler() {
+  if [ "X${ENABLE_FUNCTION_SCHEDULER}" != "Xtrue" ] && [ "X${ENABLE_FUNCTION_SCHEDULER}" != "XTRUE" ]; then
+    return 0
+  fi
+  install_function_system "function_scheduler"
+  check_and_set_component_checklist "function_scheduler" $SCHEDULER_PID
+}
+
 function start_dashboard() {
   if [ "X${ENABLE_DASHBOARD}" != "Xtrue" ] && [ "X${ENABLE_DASHBOARD}" != "XTRUE" ]; then
     return 0
@@ -538,6 +546,20 @@ function start_collector() {
   ret_code=$?
   if [ ${ret_code} -eq 0 ]; then
     check_and_set_component_checklist "collector" $COLLECTOR_PID
+  fi
+  return ${ret_code}
+}
+
+function start_meta_service() {
+  if [ "X${ENABLE_META_SERVICE}" != "Xtrue" ] && [ "X${ENABLE_META_SERVICE}" != "XTRUE" ]; then
+    return 0
+  fi
+  update_data_plane_port "meta_service_port"
+  META_SERVICE_PORT=${control_port_table["meta_service_port"]}
+  install_function_system "meta_service"
+  ret_code=$?
+  if [ ${ret_code} -eq 0 ]; then
+    check_and_set_component_checklist "meta_service" $META_SERVICE_PID
   fi
   return ${ret_code}
 }
@@ -661,7 +683,7 @@ function restart_component() {
        restart_agent_runtime_accessor
      fi
     ;;
-  function_master|ds_master|collector|faas_frontend|dashboard)
+  function_master|ds_master|collector|faas_frontend|dashboard|function_scheduler)
     restart_module "$1"
     ;;
   etcd)
@@ -680,6 +702,7 @@ function restart_component() {
     terminate_process ${pid_table["collector"]}
     terminate_process ${pid_table["dashboard"]}
     terminate_process ${pid_table["faas_frontend"]}
+    terminate_process ${pid_table["function_scheduler"]}
     start_control_plane
     ;;
   *)
@@ -895,8 +918,10 @@ function main() {
   fi
   start_function_agent
   start_faas_frontend
+  start_function_scheduler
   start_dashboard
   start_collector
+  start_meta_service
   # check all component is working, if not, restart with change port(for control plane only restart).
   wait_for_ready_on_checklist
   time=$(echo $start "$(date +%s)" | awk '{print $2-$1}')

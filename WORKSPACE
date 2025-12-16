@@ -143,7 +143,7 @@ http_archive(
 new_local_repository(
     name = "datasystem_sdk",
     build_file = "@//bazel:datasystem_sdk.bzl",
-    path = "./datasystem/output/sdk/",
+    path = "./datasystem/output/sdk/cpp/",
 )
 
 new_local_repository(
@@ -174,6 +174,15 @@ http_archive(
     sha256 = "6859d4deecc9fdd44f742bb8ff8e4ca71afca442cc8ce67aeb668dda951e8498",
     urls = ["https://github.com/jacoco/jacoco/releases/download/v0.8.8/jacoco-0.8.8.zip"],
     build_file = "@//bazel:jacoco.bzl"
+)
+
+local_patched_repository(
+    name = "gloo",
+    path = "../thirdparty/gloo",
+    build_file = "@//bazel:gloo.bzl",
+    patch_files = [
+        "@//patch:gloo-fix-sign-compare.patch",
+    ],
 )
 
 maybe(

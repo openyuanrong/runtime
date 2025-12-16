@@ -28,7 +28,7 @@ OUTPUT_DIR="${PROJECT_DIR}/output"
 RUNTIME_OUTPUT_DIR="${PROJECT_DIR}/../output"
 POSIX_DIR="${PROJECT_DIR}/proto/posix"
 BUILD_TAGS=""
-VERSION="0.5.0"
+VERSION="latest"
 FLAGS='-extldflags "-fPIC -fstack-protector-strong -Wl,-z,now,-z,relro,-z,noexecstack,-s -Wall -Werror"'
 
 while getopts "v:h" opt; do
@@ -99,8 +99,10 @@ CC='gcc -fstack-protector-strong -D_FORTIFY_SOURCE=2 -O2' go build -tags="${BUIL
 
 cd "${OUTPUT_DIR}"
 DASHBOARD_TAR_NAME="yr-dashboard-${VERSION}.tar.gz"
-tar -czvf "${DASHBOARD_TAR_NAME}" ./*
+tar -czvf "${DASHBOARD_TAR_NAME}" ./bin ./config
 mkdir -p "${RUNTIME_OUTPUT_DIR}"
 rm -rf "${RUNTIME_OUTPUT_DIR}/${DASHBOARD_TAR_NAME}"
 cp "${DASHBOARD_TAR_NAME}" "${RUNTIME_OUTPUT_DIR}"
 cd "${PROJECT_DIR}"
+
+bash -x build/faas/build.sh
