@@ -41,10 +41,11 @@
 :::{tip}
 使用 openeuler_22.03_LTS_sp4 环境执行命令安装编译工具
 ```bash
+yum install -y wget
 wget https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/build_tools/openeuler_22.03_LTS/check_tools.sh
-wget  https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/build_tools/openeuler_22.03_LTS/install_tools.sh
+wget https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/build_tools/openeuler_22.03_LTS/install_tools.sh
 bash install_tools.sh
-source /etc/profile.d/build_tools.sh
+source /etc/profile.d/buildtools.sh
 ```
 :::
 
