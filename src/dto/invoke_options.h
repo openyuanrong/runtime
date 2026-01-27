@@ -204,11 +204,17 @@ struct FunctionMeta {
     }
 };
 
+struct BindOpts {
+    std::string resource = "NONE";
+    std::string strategy = "NONE";
+};
+
 struct GroupOpts {
     std::string groupName;
     int timeout;
     bool sameLifecycle = true;
     std::string strategy;
+    BindOpts bind;
 };
 
 struct InstanceOptions {

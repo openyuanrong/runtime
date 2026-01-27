@@ -47,6 +47,9 @@ Group
            opts.groupName = groupName;
            YR::GroupOptions groupOpts;
            groupOpts.timeout = 60;
+           groupOpts.strategy = "SPREAD"
+           groupOpts.bind.resource = "NUMA";
+           groupOpts.bind.strategy = "PACK";
            auto g = YR::Group(groupName, groupOpts);
            auto ins1 = YR::Instance(SimpleCaculator::Constructor).Options(opts).Invoke();
            auto ins2 = YR::Instance(SimpleCaculator::Constructor).Options(opts).Invoke();
@@ -169,3 +172,38 @@ Group
 
        - **true**：组中的实例将一起创建和销毁，此为默认值。
        - **false**：实例可以拥有独立的生命周期。
+
+    .. cpp:member:: std::string strategy = "None"
+
+       组创建的策略。
+
+       - **None**：无策略。
+       - **PACK**：尽可能将多个实例打包到同一个节点中。
+       - **SPREAD**：尽可能将多个实例分布在不同的节点上。
+       - **STRICT_PACK**：所有实例必须放置在同一个节点上，否则创建将失败。
+       - **STRICT_SPREAD**：所有实例必须放置在不同的节点上，否则创建将失败。
+
+    .. cpp:member:: BindOptions bind
+
+       资源绑定选项。用于指定资源级别的绑定策略。
+
+.. cpp:struct:: BindOptions
+
+    资源绑定亲和性配置。
+
+    **公共成员**
+
+    .. cpp:member:: std::string resource = "NONE"
+
+       要绑定的资源类型。默认类型为 `None`。
+
+       - **None**：不绑定。
+       - **NUMA**：绑定到 NUMA 节点。
+
+    .. cpp:member:: std::string strategy = "NONE"
+
+       指定资源的绑定策略，默认策略为 `None`。
+
+       - **None**：等同于 `SPREAD` 。
+       - **PACK**：尽可能将多个实例打包到同一个资源单元中。
+       - **SPREAD**：尽可能将多个实例分布在不同的资源单元上。
