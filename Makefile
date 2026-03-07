@@ -36,22 +36,22 @@ datasystem:
 	bash datasystem/build.sh -X off -G on -i on
 	mkdir -p output
 	cp datasystem/output/yr-datasystem*.tar.gz output/
-
-functionsystem:
-	@echo "Building functionsystem..."
+	tar --no-same-owner -zxf datasystem/output/yr-datasystem-*.tar.gz --strip-components=1 -C datasystem/output
 	mkdir -p functionsystem/vendor/src
 	rm -rf functionsystem/vendor/src/datasystem
 	rm -rf functionsystem/vendor/output/Install/datasystem
 	cp datasystem/output/yr-datasystem-*.tar.gz functionsystem/vendor/src/yr-datasystem.tar.gz
+
+functionsystem:
+	@echo "Building functionsystem..."
 	cd functionsystem/ && bash run.sh build -j $(FUNCTIONSYSTEM_JOBS) && bash run.sh pack && cd -
 	mkdir -p output
 	cp functionsystem/output/yr-functionsystem*.tar.gz output/
+	cp -ar functionsystem/output/metrics ./
 
 yuanrong:
 	@echo "Building yuanrong runtime..."
-	[ -d datasystem/output/sdk ] || tar --no-same-owner -zxf datasystem/output/yr-datasystem-*.tar.gz --strip-components=1 -C datasystem/output
-	cp -ar functionsystem/output/metrics ./
-	bash build.sh -l /tmp/bazelcache -P
+	bash build.sh -P
 
 dashboard:
 	@echo "Building dashboard..."
@@ -78,4 +78,5 @@ clean:
 	rm -rf functionsystem/common/metrics/output
 	rm -rf metrics/
 	rm -rf go/output/
+	bash build.sh -C
 	@echo "Clean completed!"
