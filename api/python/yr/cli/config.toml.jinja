@@ -291,6 +291,7 @@ ssl_cert_file = "{{ values.fs.tls.cert_file }}"
 ssl_key_file = "{{ values.fs.tls.key_file }}"
 meta_store_max_flush_concurrency = 100
 meta_store_max_flush_batch_size = 50
+function_meta_path = "{{ values.yr_package_path }}/faas/executor-meta" # require openyuanrong-faas installed
 
 [function_proxy]
 bin_path = "{{ values.yr_package_path }}/functionsystem/bin/function_proxy"
@@ -373,6 +374,7 @@ ssl_downgrade_enable = true
 enable_print_perf = false
 is_partial_watch_instances = false
 runtime_instance_debug_enable = false
+function_meta_path = "{{ values.yr_package_path }}/faas/executor-meta" # require openyuanrong-faas installed
 
 [function_agent]
 bin_path = "{{ values.yr_package_path }}/functionsystem/bin/function_agent"
