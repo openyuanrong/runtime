@@ -15,8 +15,11 @@
 import sys
 import os
 import logging
-from pathlib import Path
 import datetime
+from pathlib import Path
+
+sys.path.append(os.path.abspath('.'))
+from icons import ICONS
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -131,7 +134,7 @@ html_theme_options = {
         "version-switcher",
         ],
     "switcher": {
-        "json_url": "http://docs.openyuanrong.org/versions.json",
+        "json_url": "https://docs.openyuanrong.org/versions.json",
         "version_match": os.getenv("BUILD_VERSION", "latest"),
     },
     "logo": {
@@ -146,6 +149,11 @@ html_theme_options = {
 
 html_sidebars = {
     "**": ["search-button-field.html", "sbt-sidebar-nav.html"]
+}
+
+# 使用自定义首页模板
+html_additional_pages = {
+    'index': 'custom-index.html'
 }
 
 # -----------------------------------------------------------------------------
@@ -173,3 +181,8 @@ myst_enable_extensions = [
 # -----------------------------------------------------------------------------
 breathe_projects = {"openYuanrong": "./../.doxygendocs/xml"}
 breathe_default_project = "openYuanrong"
+
+
+html_context = {
+    **ICONS,
+}
