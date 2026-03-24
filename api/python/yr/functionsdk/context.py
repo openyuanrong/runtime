@@ -24,6 +24,7 @@ from typing import Any, Dict
 
 from yr import log
 from yr.common import constants
+from yr.functionsdk.stream import Stream
 from yr.functionsdk.utils import parse_json_data_to_dict, dump_data_to_json_str
 
 _RUNTIME_MAX_RESP_BODY_SIZE = 6 * 1024 * 1024
@@ -39,6 +40,8 @@ _HEADER_SECURITY_ACCESS_KEY: str = "X-Security-Access-Key"
 _HEADER_SECURITY_SECRET_KEY: str = "X-Security-Secret-Key"
 _HEADER_SECURITY_TOKE: str = "X-Security-Token"
 _HEADER_REQUEST_ID: str = "X-Request-Id"
+_HEADER_EVENT_STREAM: str = "Accept"
+_HEADER_EVENT_STREAM_VALUE: str = "text/event-stream"
 
 
 def load_context_meta(context_meta: dict):
@@ -75,6 +78,16 @@ def init_context_invoke(stage: str, header: dict):
     context = init_context(stage)
     if _HEADER_REQUEST_ID in header:
         context.set_trace_id(header[_HEADER_REQUEST_ID])
+    # SSE streaming: prepare (requestId, instanceId) for context.get_stream().write().
+    if header.get(_HEADER_EVENT_STREAM) == _HEADER_EVENT_STREAM_VALUE:
+        try:
+            from yr.fnruntime import get_request_and_instance_id
+
+            request_id, instance_id = get_request_and_instance_id()
+            context.invoke_id = request_id
+            context.set_instance_id(instance_id)
+        except Exception:
+            pass
     return context
 
 
@@ -311,6 +324,23 @@ class Context:
     def get_invoke_property(self):
         """Method get_invoke_property, not exposed"""
         return self.invoke_property
+
+    def get_stream(self):
+        """
+        Get SSE stream writer.
+        Input of `Stream.write()` must be a serialized `str`.
+        """
+        # Lazy fetch request/instance ids if not prepared yet.
+        if not self.invoke_id or not self.instance_id:
+            try:
+                from yr.fnruntime import get_request_and_instance_id
+
+                request_id, instance_id = get_request_and_instance_id()
+                self.invoke_id = request_id
+                self.instance_id = instance_id
+            except Exception:
+                pass
+        return Stream(request_id=self.invoke_id or "", instance_id=self.instance_id or "")
 
 
 @dataclass

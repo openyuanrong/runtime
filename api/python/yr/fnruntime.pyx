@@ -2740,3 +2740,37 @@ def auto_get_cluster_access_info(dict info, args):
     c_info = cluster_access_info_py_to_cpp(info)
     result = AutoGetClusterAccessInfo(c_info, c_args)
     return cluster_access_info_cpp_to_py(result)
+
+
+def get_request_and_instance_id():
+    """
+    Get (requestId, instanceId) of current runtime context.
+    """
+    cdef:
+        pair[string, string] ret
+        shared_ptr[CLibruntime] c_libruntime = CLibruntimeManager.Instance().GetLibRuntime()
+    if c_libruntime == nullptr:
+        raise RuntimeError("already finalized")
+    ret = c_libruntime.get().GetRequestAndInstanceID()
+    return ret.first.decode(), ret.second.decode()
+
+
+def stream_write(stream_message: str, request_id: str, instance_id: str) -> None:
+    """
+    Write SSE stream message.
+    """
+    cdef:
+        string c_stream_message = stream_message.encode()
+        string c_request_id = request_id.encode()
+        string c_instance_id = instance_id.encode()
+        shared_ptr[CLibruntime] c_libruntime = CLibruntimeManager.Instance().GetLibRuntime()
+        CErrorInfo ret
+    if c_libruntime == nullptr:
+        raise RuntimeError("already finalized")
+    with nogil:
+        ret = c_libruntime.get().StreamWrite(c_stream_message, c_request_id, c_instance_id)
+    if not ret.OK():
+        raise RuntimeError(
+            f"failed to stream_write, "
+            f"code: {ret.Code()}, module code {ret.MCode()}, msg: {ret.Msg().decode()}"
+        )
