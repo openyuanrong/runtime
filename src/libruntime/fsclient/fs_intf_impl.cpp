@@ -1294,6 +1294,10 @@ ErrorInfo FSIntfImpl::Start(const std::string &jobID, const std::string &instanc
         listeningIpAddr = Config::Instance().POD_IP();
         selfPort = 0;  // service listened port is dynamic set by grpc
     }
+    if (enableEvent) {
+        listeningIpAddr = Config::Instance().POD_IP();
+        selfPort = Config::Instance().DERICT_RUNTIME_SERVER_PORT();
+    }
     this->instanceID = instanceID.empty() ? "driver-" + jobID : instanceID;
     this->runtimeID = runtimeID;
     if (!enableClientMode && (enableDirectCall || enableEvent)) {

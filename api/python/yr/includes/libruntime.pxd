@@ -746,6 +746,11 @@ cdef extern from "src/libruntime/libruntime.h" nogil:
 
         pair[CErrorInfo, CResourceGroupUnit] GetResourceGroupTable(const string & id);
 
+        CErrorInfo StreamWrite(const string &streamMessage, const string &requestId,
+                               const string &instanceId);
+
+        pair[string, string] GetRequestAndInstanceID();
+
         pair[CErrorInfo, string] GetNodeIpAddress();
 
         pair[CErrorInfo, string] GetNodeId();
