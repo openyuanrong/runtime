@@ -309,6 +309,7 @@ public:
     virtual bool IsHealth() = 0;
     virtual void UpdateEventServerInfo(const std::string &ip, int port, const std::string &instaceId) {}
     virtual int GetSelfPort() const { return -1; }
+    virtual std::string GetSelfIP() const { return ""; }
 
 protected:
     void Clear();

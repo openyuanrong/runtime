@@ -1402,5 +1402,10 @@ int FSIntfImpl::GetSelfPort() const
     return this->selfPort;
 }
 
+std::string FSIntfImpl::GetSelfIP() const
+{
+    return this->listeningIpAddr;
+}
+
 }  // namespace Libruntime
 }  // namespace YR
