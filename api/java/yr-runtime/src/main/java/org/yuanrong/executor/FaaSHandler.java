@@ -36,6 +36,7 @@ import org.yuanrong.services.runtime.action.ContextImpl;
 import org.yuanrong.services.runtime.action.ContextInvokeParams;
 import org.yuanrong.services.runtime.action.DelegateDecrypt;
 import org.yuanrong.services.runtime.action.LogTankService;
+import org.yuanrong.services.session.SessionService;
 import org.yuanrong.services.runtime.utils.DataTypeAdapter;
 import org.yuanrong.services.runtime.utils.Util;
 import org.yuanrong.errorcode.ErrorCode;
@@ -154,6 +155,8 @@ public class FaaSHandler implements HandlerIntf {
     private static final String BODY_STR = "body";
 
     private static final String X_TRACE_ID = "X-Trace-Id";
+
+    private static final String YR_AGENT_SESSION_ID = "YR_AGENT_SESSION_ID";
 
     private static final String ENV_DELEGATE_DECRYPT = "ENV_DELEGATE_DECRYPT";
 
@@ -403,6 +406,10 @@ public class FaaSHandler implements HandlerIntf {
             if (headerObj.has(X_TRACE_ID) && !headerObj.get(X_TRACE_ID).isJsonNull()) {
                 String traceId = headerObj.get(X_TRACE_ID).getAsString();
                 callContext.setTraceID(traceId);
+            }
+            if (headerObj.has(YR_AGENT_SESSION_ID) && !headerObj.get(YR_AGENT_SESSION_ID).isJsonNull()) {
+                String sessionId = headerObj.get(YR_AGENT_SESSION_ID).getAsString();
+                callContext.setSessionId(sessionId);
             }
             if (headerObj.has(EVENT_HEADER) && !headerObj.get(EVENT_HEADER).isJsonNull()) {
                 if (EVENT_HEADER_VALUE.equals(headerObj.get(EVENT_HEADER).getAsString())) {

@@ -1066,6 +1066,40 @@ JNIEXPORT jobject JNICALL Java_org_yuanrong_jni_LibRuntime_getRequestAndInstance
     return jpair;
 }
 
+JNIEXPORT jstring JNICALL Java_org_yuanrong_jni_LibRuntime_loadCurrentSession(JNIEnv *env, jclass c, jstring jsessionId)
+{
+    auto sessionId = YR::jni::JNIString::FromJava(env, jsessionId);
+    auto rtCtx = get_runtime_context_callback(env, c);
+    auto libRuntime = YR::Libruntime::LibruntimeManager::Instance().GetLibRuntime(rtCtx);
+    CHECK_NULL_THROW_NEW_AND_RETURN(env, libRuntime, nullptr, "exception occurred because LibRuntime is null");
+
+    auto [sessionJson, err] = libRuntime->LoadCurrentSession(sessionId);
+    CHECK_ERROR_AND_THROW(env, err, nullptr, "failed to LoadCurrentSession");
+
+    if (sessionJson.empty()) {
+        return nullptr;
+    }
+    return YR::jni::JNIString::FromCc(env, sessionJson);
+}
+
+JNIEXPORT void JNICALL Java_org_yuanrong_jni_LibRuntime_updateCurrentSession(JNIEnv *env, jclass c,
+                                                                              jstring jsessionId,
+                                                                              jstring jsessionJson)
+{
+    auto sessionId = YR::jni::JNIString::FromJava(env, jsessionId);
+    auto sessionJson = YR::jni::JNIString::FromJava(env, jsessionJson);
+    auto rtCtx = get_runtime_context_callback(env, c);
+    auto libRuntime = YR::Libruntime::LibruntimeManager::Instance().GetLibRuntime(rtCtx);
+    if (libRuntime == nullptr) {
+        YR::jni::JNILibruntimeException::ThrowNew(env, "exception occurred because LibRuntime is null");
+        return;
+    }
+    auto err = libRuntime->UpdateCurrentSession(sessionId, sessionJson);
+    if (!err.OK()) {
+        YR::jni::JNILibruntimeException::Throw(env, err.Code(), err.MCode(), "failed to UpdateCurrentSession");
+    }
+}
+
 
 #ifdef __cplusplus
 }

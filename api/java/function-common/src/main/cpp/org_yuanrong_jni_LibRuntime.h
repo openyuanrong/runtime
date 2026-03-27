@@ -263,6 +263,20 @@ JNIEXPORT jobject JNICALL Java_org_yuanrong_jni_LibRuntime_streamWrite(JNIEnv *,
 
 JNIEXPORT jobject JNICALL Java_org_yuanrong_jni_LibRuntime_getRequestAndInstanceID(JNIEnv *, jclass);
 
+/*
+ * Class:     org_yuanrong_jni_LibRuntime
+ * Method:    loadCurrentSession
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_yuanrong_jni_LibRuntime_loadCurrentSession(JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     org_yuanrong_jni_LibRuntime
+ * Method:    updateCurrentSession
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_yuanrong_jni_LibRuntime_updateCurrentSession(JNIEnv *, jclass, jstring, jstring);
+
 #ifdef __cplusplus
 }
 #endif
