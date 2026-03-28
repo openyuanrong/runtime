@@ -16,7 +16,10 @@
 
 #include "agent_session_manager.h"
 
+#include <array>
 #include <json.hpp>
+#include <openssl/evp.h>
+#include <openssl/sha.h>
 
 #include "src/dto/buffer.h"
 #include "src/libruntime/libruntime.h"
@@ -30,6 +33,10 @@ namespace Libruntime {
 using json = nlohmann::json;
 
 namespace {
+constexpr size_t MAX_SESSION_KEY_LENGTH = 64;
+constexpr size_t SHA256_BASE64_LENGTH = 44;
+constexpr char BASE64_PADDING = '=';
+
 std::shared_ptr<Libruntime> GetLibRuntime(const std::shared_ptr<RuntimeContext> &runtimeContext)
 {
     if (runtimeContext != nullptr) {
@@ -39,6 +46,27 @@ std::shared_ptr<Libruntime> GetLibRuntime(const std::shared_ptr<RuntimeContext> 
         }
     }
     return LibruntimeManager::Instance().GetLibRuntime();
+}
+
+std::string EncodeSha256Base64Url(const std::string &input)
+{
+    std::array<unsigned char, SHA256_DIGEST_LENGTH> digest {};
+    SHA256(reinterpret_cast<const unsigned char *>(input.data()), input.size(), digest.data());
+
+    std::array<unsigned char, SHA256_BASE64_LENGTH + 1> encodedBytes {};
+    const int encodedLen = EVP_EncodeBlock(encodedBytes.data(), digest.data(), static_cast<int>(digest.size()));
+    std::string encoded(reinterpret_cast<const char *>(encodedBytes.data()), encodedLen);
+    for (auto &ch : encoded) {
+        if (ch == '+') {
+            ch = '-';
+        } else if (ch == '/') {
+            ch = '_';
+        }
+    }
+    while (!encoded.empty() && encoded.back() == BASE64_PADDING) {
+        encoded.pop_back();
+    }
+    return encoded;
 }
 }  // namespace
 
@@ -159,8 +187,8 @@ ErrorInfo AgentSessionManager::EnsureLoaded(const std::shared_ptr<AgentSessionCo
     sessionCtx->value.sessionID = sessionId;
     sessionCtx->value.sessionKey = BuildSessionKey(meta, sessionId);
 
-    auto [buffer, readErr] = libRuntime->KVRead(sessionCtx->value.sessionKey, DEFAULT_TIMEOUT_MS);
-    if (!readErr.OK()) {
+    auto [buffer, readErr] = libRuntime->KVRead(sessionCtx->value.sessionKey, ZERO_TIMEOUT);
+    if (!readErr.OK() && readErr.Code() != ErrorCode::ERR_GET_OPERATION_FAILED) {
         return readErr;
     }
     if (buffer != nullptr && buffer->GetSize() > 0) {
@@ -207,9 +235,13 @@ ErrorInfo AgentSessionManager::Persist(const std::shared_ptr<AgentSessionContext
 
 std::string AgentSessionManager::BuildSessionKey(const libruntime::MetaData &meta, const std::string &sessionId) const
 {
-    const auto &funcMeta = meta.functionmeta();
-    return std::string(AGENT_SESSION_KEY_PREFIX) + ":" + librtConfig_->tenantId + ":" + funcMeta.modulename() + ":" +
-           funcMeta.functionname() + ":" + sessionId;
+    // Hash "name:sessionId" so the session key has an unambiguous boundary and a fixed length.
+    std::string sessionKey = std::string(AGENT_SESSION_KEY_PREFIX) + ":" +
+                             EncodeSha256Base64Url(meta.functionmeta().name() + ":" + sessionId);
+    if (sessionKey.size() > MAX_SESSION_KEY_LENGTH) {
+        sessionKey.resize(MAX_SESSION_KEY_LENGTH);
+    }
+    return sessionKey;
 }
 
 std::string AgentSessionManager::BuildDefaultSession(const std::string &sessionId) const
