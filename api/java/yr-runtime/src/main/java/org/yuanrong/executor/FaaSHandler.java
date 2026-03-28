@@ -36,7 +36,6 @@ import org.yuanrong.services.runtime.action.ContextImpl;
 import org.yuanrong.services.runtime.action.ContextInvokeParams;
 import org.yuanrong.services.runtime.action.DelegateDecrypt;
 import org.yuanrong.services.runtime.action.LogTankService;
-import org.yuanrong.services.session.SessionService;
 import org.yuanrong.services.runtime.utils.DataTypeAdapter;
 import org.yuanrong.services.runtime.utils.Util;
 import org.yuanrong.errorcode.ErrorCode;

@@ -33,9 +33,6 @@ import org.yuanrong.services.session.ManagedSessionObj;
 public class SessionServiceImpl implements SessionService {
     private final String sessionId;
 
-    /**
-     * @param sessionId session ID from the request header; empty string means no session
-     */
     public SessionServiceImpl(String sessionId) {
         this.sessionId = sessionId == null ? "" : sessionId;
     }

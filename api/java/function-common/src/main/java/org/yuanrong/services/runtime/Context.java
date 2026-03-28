@@ -299,9 +299,7 @@ public interface Context {
      *
      * @return session ID, never null
      */
-    default String getSessionId() {
-        return "";
-    }
+    String getSessionId();
 
     /**
      * Get the session service for the current invocation.
@@ -310,7 +308,5 @@ public interface Context {
      *
      * @return {@link org.yuanrong.services.session.SessionService}, or {@code null}
      */
-    default org.yuanrong.services.session.SessionService getSessionService() {
-        return null;
-    }
+    org.yuanrong.services.session.SessionService getSessionService();
 }

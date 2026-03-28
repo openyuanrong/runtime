@@ -16,15 +16,15 @@
 
 package org.yuanrong.services.session;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import org.yuanrong.errorcode.ErrorCode;
 import org.yuanrong.errorcode.ModuleCode;
 import org.yuanrong.exception.LibRuntimeException;
 import org.yuanrong.exception.YRException;
 import org.yuanrong.jni.LibRuntime;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -63,12 +63,6 @@ public class ManagedSessionObj implements SessionObj {
         return id;
     }
 
-    /**
-     * Returns an unmodifiable view of the history list.
-     *
-     * <p>Direct modification of the returned list is ignored by the runtime.
-     * Use {@link #setHistories(List)} to persist changes.</p>
-     */
     @Override
     public List<String> getHistories() {
         return Collections.unmodifiableList(histories);
@@ -91,11 +85,6 @@ public class ManagedSessionObj implements SessionObj {
         }
     }
 
-    /**
-     * Serialize to the canonical JSON format stored in DataSystem.
-     *
-     * <pre>{"sessionID":"s-123","histories":["user: hello","assistant: hi"]}</pre>
-     */
     private String serialize() {
         SessionJsonDto dto = new SessionJsonDto(id, histories);
         return GSON.toJson(dto);
@@ -107,21 +96,27 @@ public class ManagedSessionObj implements SessionObj {
      * <pre>{"sessionID":"s-123","histories":["user: hello","assistant: hi"]}</pre>
      *
      * @param json session JSON string (may be null or empty)
-     * @return ManagedSessionObj, or null if json is null/empty
+     * @return ManagedSessionObj, never null (returns empty object if json is null/empty/parse failed)
      */
     public static ManagedSessionObj fromJson(String json) {
         if (json == null || json.isEmpty()) {
-            return null;
+            return new ManagedSessionObj("", new ArrayList<>());
         }
-        SessionJsonDto dto = GSON.fromJson(json, SessionJsonDto.class);
-        if (dto == null) {
-            return null;
+        try {
+            SessionJsonDto dto = GSON.fromJson(json, SessionJsonDto.class);
+            if (dto == null) {
+                return new ManagedSessionObj("", new ArrayList<>());
+            }
+            List<String> h = dto.histories != null ? dto.histories : new ArrayList<>();
+            return new ManagedSessionObj(dto.sessionID != null ? dto.sessionID : "", h);
+        } catch (Exception e) {
+            return new ManagedSessionObj("", new ArrayList<>());
         }
-        List<String> h = dto.histories != null ? dto.histories : new ArrayList<>();
-        return new ManagedSessionObj(dto.sessionID, h);
     }
 
-    /** Private DTO used only for JSON serialization/deserialization. */
+    /**
+     * Private DTO used only for JSON serialization/deserialization.
+     */
     private static class SessionJsonDto {
         private String sessionID;
         private List<String> histories;
