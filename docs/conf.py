@@ -185,4 +185,9 @@ breathe_default_project = "openYuanrong"
 
 html_context = {
     **ICONS,
+    "metatags": """
+            <meta name="author" content="openYuanrong Team">
+            <meta name="keywords" content="openYuanrong, 分布式计算引擎, AI推理, Serverless">
+            <meta name="description" content="openYuanrong 是业界领先的 Serverless 分布式计算引擎，致力于以一套统一 Serverless 架构支持 AI、大数据、微服务等各类分布式应用。">
+        """
 }

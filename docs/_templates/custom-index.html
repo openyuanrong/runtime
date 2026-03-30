@@ -1,11 +1,45 @@
 {% extends "page.html" %}
 
-{%- block htmltitle %}
-<title>首页 — {{ docstitle|e }}</title>
-{%- endblock -%}
-
 {% block extrahead %}
 <meta charset="UTF-8">
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "openYuanrong 核心指南",
+        "description": "快速浏览 openYuanrong 系统的核心操作和案例。",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "快速入门",
+                "description": "按需选择入门指南，开始使用 openYuanrong。",
+                "url": "https://docs.openyuanrong.org/zh-cn/latest/getting_started.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "安装部署",
+                "description": "安装 openYuanrong，包括 openYuanrong SDK 和命令行工具 yr 的安装。",
+                "url": "https://docs.openyuanrong.org/zh-cn/latest/deploy/index.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "使用案例",
+                "description": "微服务、AI 推理方面的使用案例。",
+                "url": "https://docs.openyuanrong.org/zh-cn/latest/use_cases/index.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "多语言函数编程接口",
+                "description": "提供函数分布式编程接口，支持Python/Java/C++语言。",
+                "url": "https://docs.openyuanrong.org/zh-cn/latest/multi_language_function_programming_interface/index.html"
+            }
+        ]
+    }
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
     tailwind.config = {
@@ -164,7 +198,7 @@
     <section class="dot-matrix-bg text-white py-8 md:py-12 relative">
         <div class="container mx-auto px-4 max-w-4xl text-center relative z-10">
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-shadow text-slate-950 dark:!text-slate-100">openYuanrong</h1>
-            <p class="text-lg md:text-xl lg:text-2xl mb-8 font-light text-slate-600 dark:!text-slate-300">opennYuanrong 是一个 Serverless
+            <p class="text-lg md:text-xl lg:text-2xl mb-8 font-light text-slate-600 dark:!text-slate-300">openYuanrong 是一个 Serverless
                 分布式计算引擎，致力于以一套统一 Serverless 架构支持 AI、大数据、微服务等各类分布式应用。</p>
             <div class="flex flex-col sm:flex-row justify-center gap-6 mb-4">
                 <a href="{{ pathto('getting_started') }}"
@@ -228,7 +262,7 @@
 
     <!-- 应用场景 -->
     <section id="scene"
-             class="py-16 md:py-20 dark:!bg-[#121212]  bg-slate-50/50 slide-up shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)]">
+             class="py-16 md:py-20 dark:!bg-[#121212]  bg-slate-50/50 shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)]">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-4 text-slate-900 dark:!text-slate-200 tracking-wide">
                 应用场景</h2>
