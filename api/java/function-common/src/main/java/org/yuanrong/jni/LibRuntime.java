@@ -484,4 +484,31 @@ public class LibRuntime {
      * @return Pair of requestId and instanceId.
      */
     public static native Pair<String, String> getRequestAndInstanceID();
+
+    /**
+     * Load the current session from libruntime's in-memory active session map.
+     *
+     * <p>This does NOT access DataSystem directly. libruntime must have already
+     * called {@code AcquireInvokeSession} before the user function is invoked.</p>
+     *
+     * @param sessionId session ID
+     * @return session JSON string ({"sessionID":"...","histories":[...]}), or null if not found
+     * @throws LibRuntimeException if the native call fails
+     */
+    public static native String loadCurrentSession(String sessionId) throws LibRuntimeException;
+
+    /**
+     * Update the in-memory session held by libruntime.
+     *
+     * <p>This only writes to libruntime's {@code AgentSessionContext}; the
+     * actual DataSystem persist is done by C++ {@code PersistAndReleaseInvokeSession}
+     * after the user function returns.</p>
+     *
+     * @param sessionId   session ID
+     * @param sessionJson serialized session JSON:
+     *                    {@code {"sessionID":"...","histories":[...]}}
+     * @throws LibRuntimeException if the native call fails
+     */
+    public static native void updateCurrentSession(String sessionId, String sessionJson)
+        throws LibRuntimeException;
 }
