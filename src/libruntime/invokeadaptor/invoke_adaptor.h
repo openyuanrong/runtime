@@ -117,6 +117,9 @@ public:
 
     virtual ErrorInfo Kill(const std::string &instanceId, const std::string &payload, int signal);
 
+    virtual std::pair<ErrorInfo, KillResponse> KillWithResponse(const std::string &instanceId,
+                                                                 const std::string &payload, int signal);
+
     virtual void KillAsync(const std::string &instanceId, const std::string &payload, int signal);
     virtual void KillAsyncCB(const std::string &instanceId, const std::string &payload, int signal,
                              std::function<void(const ErrorInfo &err)> cb, int timeoutSec = -1);
@@ -161,6 +164,12 @@ public:
     void CallHandler(const std::shared_ptr<CallMessageSpec> &req);
     CheckpointResponse CheckpointHandler(const CheckpointRequest &req);
     RecoverResponse RecoverHandler(const RecoverRequest &req);
+    PrepareSnapResponse PrepareSnapHandler(const PrepareSnapRequest &req);
+    SnapStartedResponse SnapStartedHandler(const SnapStartedRequest &req);
+    SignalResponse SignalHandler(const SignalRequest &req);
+    ShutdownResponse ShutdownHandler(const ShutdownRequest &req);
+    HeartbeatResponse HeartbeatHandler(const HeartbeatRequest &req);
+    void EventHandler(const std::shared_ptr<EventMessageSpec> &req);
 
     void CreateResourceGroup(std::shared_ptr<ResourceGroupCreateSpec> spec);
     virtual std::pair<YR::Libruntime::FunctionMeta, ErrorInfo> GetInstance(const std::string &name,
@@ -186,6 +195,7 @@ public:
     virtual std::pair<ErrorInfo, QueryNamedInsResponse> QueryNamedInstances();
     ErrorInfo StreamWriteEvent(const std::string &streamMessage, const std::string &requestId,
                                const std::string &instanceId);
+    std::string GetActiveMasterAddr();
     virtual std::pair<std::string, ErrorInfo> LoadCurrentSession(const std::string &sessionId);
     virtual ErrorInfo UpdateCurrentSession(const std::string &sessionId, const std::string &sessionData);
     virtual bool IsSessionInterrupted(const std::string &sessionId);
@@ -194,11 +204,7 @@ private:
     void CreateNotifyHandler(const NotifyRequest &req);
     ErrorInfo WriteDataToState(const std::string &instanceId, const std::shared_ptr<Buffer> data, std::string *state);
     ErrorInfo ReadDataFromState(const std::string &instanceId, const std::string &state, std::shared_ptr<Buffer> &data);
-    SignalResponse SignalHandler(const SignalRequest &req);
     SignalResponse ExecSignalCallback(const SignalRequest &req);
-    ShutdownResponse ShutdownHandler(const ShutdownRequest &req);
-    HeartbeatResponse HeartbeatHandler(const HeartbeatRequest &req);
-    void EventHandler(const std::shared_ptr<EventMessageSpec> &req);
     void ExecUserShutdownCallback(uint64_t gracePeriodSec,
                                   const std::shared_ptr<utility::NotificationUtility> &notification);
     ErrorInfo ParseAliasInfo(const SignalRequest &req, std::vector<AliasElement> &aliasInfo);

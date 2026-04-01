@@ -35,6 +35,7 @@ from yr.libruntime_pb2 import FunctionMeta, LanguageType
 from yr.object_ref import ObjectRef
 from yr.runtime_holder import global_runtime
 from yr.generator import ObjectRefGenerator
+from yr.serialization import Serialization
 
 _logger = logging.getLogger(__name__)
 
@@ -65,6 +66,7 @@ class FunctionProxy:
         self.cross_language_info = cross_language_info
         self.invoke_options = invoke_options
         self._code_ref = None
+        self._code = None
         self._initializer_code_ref = None
         self.__original_func__ = func
         self._is_generator = inspect.isgeneratorfunction(func) or inspect.isasyncgenfunction(func)
@@ -116,6 +118,7 @@ class FunctionProxy:
         attrs = self.__dict__.copy()
         del attrs["_lock"]
         del attrs["_code_ref"]
+        del attrs["_code"]
         del attrs["_initializer_code_ref"]
         return attrs
 
@@ -123,6 +126,7 @@ class FunctionProxy:
         self.__dict__.update(state)
         self.__dict__["_lock"] = threading.Lock()
         self.__dict__["_code_ref"] = None
+        self.__dict__["_code"] = None
         self.__dict__["_initializer_code_ref"] = None
 
     def options(self, invoke_options: InvokeOptions) -> "FunctionProxy":
@@ -197,6 +201,57 @@ class FunctionProxy:
         """
         return self.__original_func__
 
+    def invoke(self, *args, **kwargs):
+        """
+        Execute the decorated function remotely.
+
+        This method triggers the execution of the decorated function on remote workers.
+        The function is executed with the provided arguments and returns an ObjectRef
+        that can be used to retrieve the result.
+
+        Args:
+            *args: Variable arguments to pass to the decorated function.
+            **kwargs: Keyword arguments to pass to the decorated function.
+
+        Returns:
+            ObjectRef or List[ObjectRef]: A reference to the result object(s). 
+            For functions with return_nums=1, returns a single ObjectRef.
+            For functions with return_nums>1, returns a list of ObjectRefs.
+            For generator functions, returns an ObjectRefGenerator.
+            For functions with return_nums=0, returns None.
+
+        Raises:
+            TypeError: If the provided arguments don't match the function signature.
+            RuntimeError: If the function execution fails or runtime is not initialized.
+
+        Examples:
+            >>> import yr
+            >>>
+            >>> yr.init()
+            >>>
+            >>> @yr.invoke
+            ... def add(a, b):
+            ...     return a + b
+            >>>
+            >>> result_ref = add.invoke(1, 2)
+            >>> result = yr.get(result_ref)
+            >>> print(result)  # Output: 3
+            >>>
+            >>> # For functions with multiple return values
+            >>> @yr.invoke(return_nums=2)
+            ... def divmod_func(a, b):
+            ...     return divmod(a, b)
+            >>>
+            >>> quotient_ref, remainder_ref = divmod_func.invoke(10, 3)
+            >>> print(yr.get(quotient_ref))  # Output: 3
+            >>> print(yr.get(remainder_ref))  # Output: 1
+            >>>
+            >>> yr.finalize()
+        """
+        # This is a placeholder method for documentation purposes.
+        # The actual implementation is dynamically assigned in __init__.
+        raise NotImplementedError("This method is dynamically overridden in __init__")
+
     def create_opts_wrapper(self, opts: InvokeOptions):
         """
         Public interface to safely wrap invoke options.
@@ -208,6 +263,24 @@ class FunctionProxy:
             An instance of FunctionProxyWrapper
         """
         return self._options_wrapper(opts)
+
+    def invoke_function_for_testing(self, opts: InvokeOptions, func, args=None, kwargs=None) -> Union[
+            "yr.ObjectRef", List["yr.ObjectRef"]]:
+        """
+        Invoke function for testing purposes.
+
+        This is a public wrapper around _invoke_function for testing.
+
+        Args:
+            opts: The invoke options.
+            func: The function to invoke.
+            args: The positional arguments.
+            kwargs: The keyword arguments.
+
+        Returns:
+            A reference to the data object or list of references.
+        """
+        return self._invoke_function(opts, func, args, kwargs)
 
     def _invoke_function(self, opts: InvokeOptions, func, args=None, kwargs=None) -> Union[
             "yr.ObjectRef", List["yr.ObjectRef"]]:
@@ -232,14 +305,23 @@ class FunctionProxy:
                     or not global_runtime.get_runtime().is_object_existing_in_local(
                         self._code_ref.id
                         )):
-                self._code_ref = yr.put(func)
+                serialized_object = Serialization().serialize(func)
+                if len(serialized_object) <= 102400:
+                    self._code = serialized_object.to_bytes()
+                    _logger.debug("[Reference Counting] pass code by request, functionName = %s", func.__qualname__)
+                self._code_ref = ObjectRef(
+                    global_runtime.get_runtime().put_serialized(serialized_object),
+                    need_incre=False
+                )
                 _logger.debug("[Reference Counting] put code with id = %s, functionName = %s",
                               self._code_ref.id, func.__qualname__)
         with self._lock:
             if self._initializer and self._initializer_code_ref is None:
                 self._initializer_code_ref = yr.put(self._initializer)
 
-        initializer_code_id = self._initializer_code_ref if self._initializer_code_ref is not None else ""
+        initializer_code_id = ""
+        if self._initializer_code_ref is not None:
+            initializer_code_id = self._initializer_code_ref.id
         func_meta = FunctionMeta(functionID=function_id,  # if designated_urn is not set,
                                  # use function id in the config
                                  moduleName=self.function_descriptor.module_name,
@@ -249,6 +331,7 @@ class FunctionProxy:
                                  codeID=self._code_ref.id if self._code_ref is not None else "",
                                  initializerCodeID=initializer_code_id,
                                  isGenerator=self._is_generator,
+                                 code=self._code if self._code is not None else b"",
                                  )
         return_nums = 1 if (self.return_nums == 0 or self._is_generator) else self.return_nums
         group_enabled = function_group_enabled(self.invoke_options.function_group_options, self.function_group_size)
@@ -324,3 +407,8 @@ def make_cross_language_function_proxy(function_name, function_urn, language):
     function_key = utils.get_function_from_urn(function_urn)
 
     return FunctionProxy(None, CrossLanguageInfo(function_name, function_key, language))
+
+
+# Gradual migration: StatelessFunction is the new preferred name
+# FunctionProxy is kept for backward compatibility
+StatelessFunction = FunctionProxy

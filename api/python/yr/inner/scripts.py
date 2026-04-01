@@ -21,6 +21,7 @@ import subprocess
 
 import yr.inner
 
+
 PR_SET_PDEATHSIG = 1
 SIGTERM = 15
 
@@ -41,9 +42,9 @@ def run_cli_prog(cli_name: str = "yr"):
     :param cli_name: the name of yuanrong cli tool
     """
     set_pdeathsig()
-    command = [os.path.join(yr.inner.yuanrong_installation_dir, "cli", "bin", cli_name)] + sys.argv[
-        1:
-    ]
+    command = [
+        os.path.join(yr.inner.yuanrong_installation_dir, "functionsystem", "bin", cli_name)
+    ] + sys.argv[1:]
     try:
         process = subprocess.Popen(
             command,
@@ -53,9 +54,9 @@ def run_cli_prog(cli_name: str = "yr"):
             universal_newlines=True,
             env={
                 "YR_INSTALLATION_DIR": yr.inner.yuanrong_installation_dir,
-                **os.environ
+                **os.environ,
             },
-            preexec_fn=set_pdeathsig
+            preexec_fn=set_pdeathsig,
         )
         process.communicate()
         sys.exit(process.returncode)
@@ -69,3 +70,7 @@ def run_yr():
     run yr command
     """
     run_cli_prog("yr")
+
+
+if __name__ == "__main__":
+    run_yr()

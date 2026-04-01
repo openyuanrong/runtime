@@ -447,15 +447,15 @@ TEST_F(InvokeAdaptorTest, SubmitFunctionWithAliasTest)
     params["devType"] = "MATE40";
 
     opts.aliasParams = params;
-    invokeSpec->functionMeta.functionId = "12345678901234561234567890123456/helloworld/myaliasv1";
+    invokeSpec->functionMeta.functionId = "default/helloworld/myaliasv1";
     invokeSpec->opts = opts;
     invokeSpec->BuildInstanceCreateRequest(cfg);
 
     std::vector<AliasElement> g_aes_rule = {
         {
-            .aliasUrn = "sn:cn:yrk:12345678901234561234567890123456:function:helloworld:myaliasv1",
-            .functionUrn = "sn:cn:yrk:12345678901234561234567890123456:function:helloworld",
-            .functionVersionUrn = "sn:cn:yrk:12345678901234561234567890123456:function:helloworld:$latest",
+            .aliasUrn = "sn:cn:yrk:default:function:helloworld:myaliasv1",
+            .functionUrn = "sn:cn:yrk:default:function:helloworld",
+            .functionVersionUrn = "sn:cn:yrk:default:function:helloworld:$latest",
             .name = "myaliasv1",
             .functionVersion = "$latest",
             .revisionId = "20210617023315921",
@@ -470,13 +470,13 @@ TEST_F(InvokeAdaptorTest, SubmitFunctionWithAliasTest)
                             "age:<=:20",
                             "devType:in:P40,P50,MATE40",
                         },
-                    .grayVersion = "sn:cn:yrk:12345678901234561234567890123456:function:helloworld:1",
+                    .grayVersion = "sn:cn:yrk:default:function:helloworld:1",
                 },
         },
     };
     invokeAdaptor->ar->UpdateAliasInfo(g_aes_rule);
     invokeAdaptor->SubmitFunction(invokeSpec);
-    ASSERT_EQ(invokeSpec->functionMeta.functionId, "12345678901234561234567890123456/helloworld/1");
+    ASSERT_EQ(invokeSpec->functionMeta.functionId, "default/helloworld/1");
 }
 
 TEST_F(InvokeAdaptorTest, CreateResponseHandlerTest)
@@ -851,6 +851,17 @@ TEST_F(InvokeAdaptorTest, SignalHandlerTest)
     response = invokeAdaptor->SignalHandler(req);
     ASSERT_EQ(response.code(), ::common::ErrorCode::ERR_NONE);
     invokeAdaptor->isRunning = true;
+
+    req.set_signal(libruntime::Signal::UpdateEventInfo);
+    EventPayload eventPayload;
+    eventPayload.set_serverip("127.0.0.1");
+    eventPayload.set_serverport(8080);
+    eventPayload.set_serverinstanceid("test_instance_id");
+    std::string serializedEventPayload;
+    eventPayload.SerializeToString(&serializedEventPayload);
+    req.set_payload(serializedEventPayload);
+    response = invokeAdaptor->SignalHandler(req);
+    ASSERT_EQ(response.code(), ::common::ErrorCode::ERR_NONE);
 }
 
 TEST_F(InvokeAdaptorTest, SignalHandlerCancelWithPayloadTest)

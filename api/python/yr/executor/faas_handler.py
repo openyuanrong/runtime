@@ -16,13 +16,15 @@
 
 """faas handler"""
 
+import logging
 from typing import List
 
-from yr import log
 from yr.common.utils import err_to_str
 from yr.err_type import ErrorCode, ErrorInfo, ModuleCode
 from yr.executor.faas_executor import faas_shutdown_handler
 from yr.executor.handler_intf import HandlerIntf
+
+_logger = logging.getLogger(__name__)
 
 
 class FaasHandler(HandlerIntf):
@@ -41,5 +43,13 @@ class FaasHandler(HandlerIntf):
         try:
             return faas_shutdown_handler(grace_period_second)
         except Exception as e:
-            log.get_logger().exception(e)
+            _logger.exception(e)
             return ErrorInfo(ErrorCode.ERR_INNER_SYSTEM_ERROR, ModuleCode.RUNTIME, err_to_str(e))
+
+    def before_snapshot(self) -> ErrorInfo:
+        """FaaS path has no user instance hooks; snapshot is handled outside user code."""
+        return ErrorInfo()
+
+    def after_snapstart(self) -> ErrorInfo:
+        """FaaS path has no user instance hooks after snapstart."""
+        return ErrorInfo()

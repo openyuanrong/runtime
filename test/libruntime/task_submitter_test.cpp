@@ -841,5 +841,6 @@ TEST_F(TaskSubmitterTest, HandleFailInvokeIsDelayScaleDownTest)
     req.set_code(common::ErrorCode::ERR_USER_FUNCTION_EXCEPTION);
     ASSERT_FALSE(taskSubmitter->HandleFailInvokeIsDelayScaleDown(req, ErrorInfo()));
 }
+
 }  // namespace test
 }  // namespace YR

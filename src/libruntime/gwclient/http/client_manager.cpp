@@ -24,14 +24,31 @@
 #include "src/utility/logger/logger.h"
 #include "src/utility/notification_utility.h"
 
+namespace ssl = boost::asio::ssl;
+
 namespace {
 const int RETRY_TIME = 3;
 const int INTERVAL_TIME = 2;
 }  // namespace
 
-namespace ssl = boost::asio::ssl;
 namespace YR {
 namespace Libruntime {
+namespace {
+void ConfigureSslVerifyPeer(const std::shared_ptr<LibruntimeConfig> &cfg, const std::shared_ptr<ssl::context> &ctx)
+{
+    if (cfg->skipServerVerify) {
+        ctx->set_verify_mode(ssl::verify_none);
+        return;
+    }
+    ctx->set_verify_mode(ssl::verify_peer);
+    if (cfg->verifyFilePath.empty()) {
+        ctx->set_default_verify_paths();
+    } else {
+        ctx->load_verify_file(cfg->verifyFilePath);
+    }
+}
+}  // namespace
+
 using YR::utility::NotificationUtility;
 ClientManager::ClientManager(const std::shared_ptr<LibruntimeConfig> &libruntimeConfig) : librtCfg(libruntimeConfig)
 {
@@ -39,8 +56,12 @@ ClientManager::ClientManager(const std::shared_ptr<LibruntimeConfig> &libruntime
     this->work = std::make_unique<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>>(
         boost::asio::make_work_guard(*ioc));
     this->maxIocThread = libruntimeConfig->httpIocThreadsNum;
+    // enableMTLS: Enable mutual TLS authentication (both client and server verify each other's certificates)
+    // true = mutual TLS (client provides certificate for authentication)
     this->enableMTLS = libruntimeConfig->enableMTLS;
     this->maxConnSize_ = libruntimeConfig->maxConnSize;
+    // enableTLS_: Enable TLS encryption with one-way authentication (only verify server certificate)
+    // true = one-way TLS (client verifies server certificate, no client certificate required)
     this->enableTLS_ = libruntimeConfig->enableTLS;
 }
 
@@ -73,58 +94,103 @@ void ClientManager::Stop()
     }
 }
 
-ErrorInfo ClientManager::InitCtxAndIocThread()
+ErrorInfo ClientManager::InitMtlsClients()
 {
     ErrorInfo err;
-    if (enableMTLS) {
-        try {
-            auto ctx = std::make_shared<ssl::context>(ssl::context::tlsv12_client);
-            ctx->set_options(ssl::context::default_workarounds | ssl::context::no_sslv2 | ssl::context::no_sslv3 |
-                             ssl::context::no_tlsv1 | ssl::context::no_tlsv1_1);
-            ctx->set_verify_mode(ssl::verify_peer);
-            ctx->load_verify_file(librtCfg->verifyFilePath);
-            ctx->use_certificate_chain_file(librtCfg->certificateFilePath);
-            ctx->set_password_callback([&](std::size_t max_length, ssl::context_base::password_purpose purpose) {
-                return std::string(librtCfg->privateKeyPaaswd);
-            });
-            ctx->use_private_key_file(librtCfg->privateKeyPath, ssl::context::pem);
-            for (uint32_t i = 0; i < maxConnSize_; i++) {
-                this->clients.emplace_back(std::make_shared<AsyncHttpsClient>(this->ioc, ctx, librtCfg->serverName));
-            }
-        } catch (const std::exception &e) {
-            YRLOG_ERROR("caught exception when init context : {}", e.what());
-            err.SetErrCodeAndMsg(ErrorCode::ERR_INIT_CONNECTION_FAILED, ModuleCode::RUNTIME, e.what());
-            return err;
-        } catch (...) {
-            YRLOG_ERROR("caught unknown exception when init context");
-            err.SetErrCodeAndMsg(ErrorCode::ERR_INIT_CONNECTION_FAILED, ModuleCode::RUNTIME,
-                                 "caught unknown exception when init context");
-            return err;
-        }
-    } else if (enableTLS_) {
+    try {
         auto ctx = std::make_shared<ssl::context>(ssl::context::tlsv12_client);
         ctx->set_options(ssl::context::default_workarounds | ssl::context::no_sslv2 | ssl::context::no_sslv3 |
                          ssl::context::no_tlsv1 | ssl::context::no_tlsv1_1);
-        if (librtCfg->verifyFilePath.empty()) {
-            ctx->set_default_verify_paths();
-        } else {
-            ctx->load_verify_file(librtCfg->verifyFilePath);
-        }
-        ctx->set_verify_mode(ssl::verify_peer);
-        for (uint32_t i = 0; i < maxConnSize_; i++) {
-            this->clients.emplace_back(std::make_shared<AsyncHttpsClient>(this->ioc, ctx, librtCfg->serverName));
-        }
-    } else {
-        for (uint32_t i = 0; i < maxConnSize_; i++) {
-            this->clients.emplace_back(std::make_shared<AsyncHttpClient>(this->ioc));
-        }
-    }
 
+        if (librtCfg->certificateFilePath.empty() || librtCfg->privateKeyPath.empty()) {
+            YRLOG_ERROR("enableMTLS is true, but certificateFilePath or privateKeyPath is empty");
+            err.SetErrCodeAndMsg(ErrorCode::ERR_INIT_CONNECTION_FAILED, ModuleCode::RUNTIME,
+                                 "certificateFilePath or privateKeyPath is empty for mTLS");
+            return err;
+        }
+        ctx->use_certificate_chain_file(librtCfg->certificateFilePath);
+
+        if (strlen(librtCfg->privateKeyPaaswd) > 0) {
+            ctx->set_password_callback([this](std::size_t, ssl::context::password_purpose) {
+                return std::string(librtCfg->privateKeyPaaswd);
+            });
+        }
+        ctx->use_private_key_file(librtCfg->privateKeyPath, ssl::context::pem);
+
+        ConfigureSslVerifyPeer(librtCfg, ctx);
+
+        for (uint32_t i = 0; i < maxConnSize_; i++) {
+            this->clients.emplace_back(std::make_shared<AsyncHttpsClient>(this->ioc, ctx));
+        }
+    } catch (const std::exception &e) {
+        YRLOG_ERROR("caught exception when init mTLS context: {}", e.what());
+        err.SetErrCodeAndMsg(ErrorCode::ERR_INIT_CONNECTION_FAILED, ModuleCode::RUNTIME, e.what());
+        return err;
+    } catch (...) {
+        YRLOG_ERROR("caught unknown exception when init mTLS context");
+        err.SetErrCodeAndMsg(ErrorCode::ERR_INIT_CONNECTION_FAILED, ModuleCode::RUNTIME,
+                             "caught unknown exception when init mTLS context");
+        return err;
+    }
+    return err;
+}
+
+ErrorInfo ClientManager::InitOneWayTlsClients()
+{
+    ErrorInfo err;
+    try {
+        auto ctx = std::make_shared<ssl::context>(ssl::context::tlsv12_client);
+        ctx->set_options(ssl::context::default_workarounds | ssl::context::no_sslv2 | ssl::context::no_sslv3 |
+                         ssl::context::no_tlsv1 | ssl::context::no_tlsv1_1);
+
+        ConfigureSslVerifyPeer(librtCfg, ctx);
+
+        for (uint32_t i = 0; i < maxConnSize_; i++) {
+            this->clients.emplace_back(std::make_shared<AsyncHttpsClient>(this->ioc, ctx));
+        }
+    } catch (const std::exception &e) {
+        YRLOG_ERROR("caught exception when init TLS context: {}", e.what());
+        err.SetErrCodeAndMsg(ErrorCode::ERR_INIT_CONNECTION_FAILED, ModuleCode::RUNTIME, e.what());
+        return err;
+    } catch (...) {
+        YRLOG_ERROR("caught unknown exception when init TLS context");
+        err.SetErrCodeAndMsg(ErrorCode::ERR_INIT_CONNECTION_FAILED, ModuleCode::RUNTIME,
+                             "caught unknown exception when init TLS context");
+        return err;
+    }
+    return err;
+}
+
+void ClientManager::InitPlainHttpClients()
+{
+    for (uint32_t i = 0; i < maxConnSize_; i++) {
+        this->clients.emplace_back(std::make_shared<AsyncHttpClient>(this->ioc));
+    }
+}
+
+void ClientManager::StartIocThreads()
+{
     for (uint32_t i = 0; i < maxIocThread; i++) {
         asyncRunners.push_back(std::make_unique<std::thread>([&] { this->ioc->run(); }));
         std::string name = "yr_client_io_" + std::to_string(i);
         pthread_setname_np(this->asyncRunners[i]->native_handle(), name.c_str());
     }
+}
+
+ErrorInfo ClientManager::InitCtxAndIocThread()
+{
+    ErrorInfo err;
+    if (enableMTLS) {
+        err = InitMtlsClients();
+    } else if (enableTLS_) {
+        err = InitOneWayTlsClients();
+    } else {
+        InitPlainHttpClients();
+    }
+    if (!err.OK()) {
+        return err;
+    }
+    StartIocThreads();
     return err;
 }
 

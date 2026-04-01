@@ -16,7 +16,11 @@
 
 package org.yuanrong.jobexecutor;
 
+import org.yuanrong.api.YR;
+import org.yuanrong.errorcode.ErrorCode;
+import org.yuanrong.errorcode.ModuleCode;
 import org.yuanrong.exception.YRException;
+import org.yuanrong.runtime.client.ObjectRef;
 import org.yuanrong.runtime.util.Constants;
 import org.yuanrong.runtime.util.Utils;
 
@@ -28,9 +32,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +52,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class JobExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobExecutor.class);
-
-    /**
-     * The list of programs that are allowed to run on the processBuilder.
-     */
-    private static final List<String> ALLOWED_PROGRAM = Collections.singletonList("python3.9");
 
     /**
      * The key to yuanrong functionProxy port in remote JobExecutor runtime
@@ -81,8 +83,9 @@ public class JobExecutor {
     private static final String DEFAULT_JAVA_HOME = "/opt/function/runtime/java8/rtsp/jre";
     private static final String DEFAULT_SPARK_HOME = "/dcache/layer/func/bucket-jobexecutor-test/spark_test.zip";
     private static final String DEFAULT_YR_SPARK_FUNC_URN =
-    "sn:cn:yrk:12345678901234561234567890123456:function:0-sparkonyr-core:$latest";
+            "sn:cn:yrk:default:function:0-sparkonyr-core:$latest";
     private static final int CODE_PATH_INDEX = 1;
+    private static final int DEFAULT_GET_TIMEOUT_MS = 30000;
 
     /**
      * The thread pool for asynchronous log printing and waiting
@@ -106,31 +109,79 @@ public class JobExecutor {
     /**
      * The Constructor of JobExecutor.
      *
-     * @param jobName         the user-defined job name.
-     * @param runtimeEnv      the python environment to be installed in remote
-     *                        runtime.
-     * @param localEntryPoint the entry point to be executed in remote runtime. it
-     *                        will contains the localCodePath if provided by user.
-     * @param affinityMsgJsonStr the affinityMsgJsonStr
+     * @param yrJobParam job parameters (runtime, entrypoint, affinity, etc.)
      * @throws YRException the actor task exception.
      */
-    public JobExecutor(String jobName, RuntimeEnv runtimeEnv, ArrayList<String> localEntryPoint,
-            String affinityMsgJsonStr) throws YRException {
-        this.runtimeEnv = runtimeEnv;
-        this.jobName = jobName;
+    public JobExecutor(YRJobParam yrJobParam) throws YRException {
+        this.runtimeEnv = yrJobParam.getRuntimeEnv();
+        this.jobName = yrJobParam.getJobName();
         this.userJobID = Utils.getEnvWithDefualtValue(INSTANCE_ID, "", LOG_PREFIX);
         LOGGER.debug("(JobExecutor) Job submitted, jobExecutor actor instanceID: {}", userJobID);
 
+        ArrayList<String> localEntryPoint = yrJobParam.getLocalEntryPoint();
+        String affinityMsgJsonStr = yrJobParam.extractInvokeOptions().affinityMsgToJsonStr();
+        ObjectRef entryPointObjRef = yrJobParam.getEntryPointObjRef();
+        String fileName = yrJobParam.getEntryPointFileName();
         String downloadCodePath = System.getenv(ENV_DELEGATE_DOWNLOAD);
         if (downloadCodePath != null && !downloadCodePath.isEmpty()) {
             localEntryPoint.set(CODE_PATH_INDEX,
                     String.join(Constants.BACKSLASH, downloadCodePath, localEntryPoint.get(CODE_PATH_INDEX)));
         }
 
+        if (entryPointObjRef != null) {
+            LOGGER.info("(JobExecutor) entryPointObjRef is not null");
+            byte[] data = (byte[]) YR.getRuntime().get(entryPointObjRef, DEFAULT_GET_TIMEOUT_MS);
+
+            if (!saveBytesToFile(data, yrJobParam.getLocalCodePath(), fileName)) {
+                throw new YRException(ErrorCode.ERR_INNER_SYSTEM_ERROR, ModuleCode.RUNTIME,
+                        "failed to load entryPoint file");
+            }
+        } else {
+            LOGGER.info("(JobExecutor) entryPointObjRef is null");
+        }
+
         LOGGER.info("(JobExecutor) Starts attached-runtime process, entrypoint: {}", localEntryPoint);
         startAttachedRuntime(generateAttachedRuntimeEnv(affinityMsgJsonStr), localEntryPoint);
         asyncReadProcessStream();
         asyncWaitForAttachedRuntime();
+    }
+
+
+    private boolean saveBytesToFile(byte[] data, String pathStr, String fileName) {
+        LOGGER.debug("begin to save entrypoint file. {}", pathStr + fileName);
+        if (data == null) {
+            LOGGER.warn("entryPoint data is null");
+            return false;
+        }
+
+        // Validate fileName to prevent path traversal attacks
+        if (fileName == null || fileName.isEmpty()) {
+            LOGGER.error("File name is null or empty");
+            return false;
+        }
+        // Check for path traversal attempts
+        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            LOGGER.error("Potentially unsafe file name detected: {}", fileName);
+            return false;
+        }
+
+        try {
+            Path path = Paths.get(pathStr, fileName);
+            Path parent = path.getParent();
+            if (parent != null && !Files.exists(parent)) {
+                Files.createDirectories(parent);
+            }
+            // 写入文件
+            Files.write(path, data);
+            LOGGER.info("File saved successfully: {}{}", pathStr, fileName);
+            return true;
+        } catch (InvalidPathException e) {
+            LOGGER.error("Invalid output path: {}{}", pathStr, fileName);
+            return false;
+        } catch (IOException e) {
+            LOGGER.error("Failed to save the file: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -197,7 +248,7 @@ public class JobExecutor {
         String runtimeEnvCommand = this.runtimeEnv.toCommand();
         arEnv.put(Constants.POST_START_EXEC, runtimeEnvCommand);
         LOGGER.debug("(JobExecutor) Sets environment key-value pair({}: {}) for job (jobName: {}).",
-        Constants.POST_START_EXEC, runtimeEnvCommand, this.jobName);
+                Constants.POST_START_EXEC, runtimeEnvCommand, this.jobName);
 
         arEnv.put(YR_JOB_AFFINITY, affinityMsgJsonStr);
         LOGGER.debug("(JobExecutor) Sets environment key-value pair({}: {}) for job (jobName: {}).",
@@ -207,13 +258,6 @@ public class JobExecutor {
     }
 
     private void startAttachedRuntime(Map<String, String> attachedRuntimeEnv, List<String> entryPoint) {
-        String program = entryPoint.get(0);
-        if (!ALLOWED_PROGRAM.contains(program)) {
-            LOGGER.error("(JobExecutor) Program {} is not allowed to be executed for the security reason. "
-                    + "Allowed programs are: {}", program, ALLOWED_PROGRAM);
-            writeStatus(YRJobStatus.FAILED);
-            return;
-        }
         ProcessBuilder processBuilder = new ProcessBuilder(entryPoint);
         Map<String, String> env = processBuilder.environment();
         env.putAll(attachedRuntimeEnv);
@@ -267,11 +311,7 @@ public class JobExecutor {
                 return;
             }
             writeStatus(YRJobStatus.SUCCEEDED);
-            /*
-             * There is a one-to-one correspondence between JobExecutor runtime and
-             * attached-runtime. Therefore, after attached-runtime is finished, the thread pool belonging
-             * to JobExecutor runtime can be closed.
-             */
+            // One JobExecutor runtime maps to one attached-runtime; close its thread pool when done.
             this.clearThreadPool();
         });
     }

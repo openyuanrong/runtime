@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env python3
+# coding=UTF-8
 # Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e
-BASE_DIR=$(
-  cd "$(dirname "$0")"
-  pwd
-)
+__all__ = ["yuanrong_installation_dir"]
 
-bash ${BASE_DIR}/package_yuanrong.sh "$@"
-bash ${BASE_DIR}/package_whl.sh "$@"
+import os
 
+self_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)))
+yuanrong_installation_dir = os.path.realpath(self_dir)

@@ -52,7 +52,7 @@ class TestApi(unittest.TestCase):
 
     def test_yr_init_failed_when_input_invalid_address(self):
         conf = yr.Config()
-        conf.function_id = "sn:cn:yrk:12345678901234561234567890123456:function:0-yr-test-config-init:$latest"
+        conf.function_id = "sn:cn:yrk:default:function:0-yr-test-config-init:$latest"
         conf.server_address = "127.0.0.1:11111"
         conf.in_cluster = False
         with self.assertRaises(ValueError):
@@ -79,6 +79,7 @@ class TestApi(unittest.TestCase):
         mock_runtime.create_instance.return_value = "1"
         mock_runtime.invoke_instance.return_value = ["1"]
         mock_runtime.put.return_value = "1"
+        mock_runtime.put_serialized.return_value = "serialized-code-id"
         mock_runtime.increase_global_reference.return_value = None
         mock_runtime.decrease_global_reference.return_value = None
         get_runtime.return_value = mock_runtime
@@ -377,7 +378,7 @@ class TestApi(unittest.TestCase):
     @patch("yr.decorator.instance_proxy.make_cpp_instance_creator")
     def test_class_cross_instance(self, make_cpp_instance_creator):
         make_cpp_instance_creator.return_value = ""
-        urn = "sn:cn:yrk:12345678901234561234567890123456:function:0-yr-test-config-init:$latest"
+        urn = "sn:cn:yrk:default:function:0-yr-test-config-init:$latest"
         cpp_class = yr.apis.cpp_instance_class(
             "class", "factory", urn)
 

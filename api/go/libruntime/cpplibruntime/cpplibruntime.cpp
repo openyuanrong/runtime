@@ -955,7 +955,7 @@ void CGetEvent(char *objectId, void *userData)
             auto cErr = ErrorInfoToCError(err);
             CBuffer cBuf = {0};
             if (err.OK()) {
-                cErr = ErrorInfoToCError(ToCBuffer(data->buffer, &cBuf));
+                cErr = ErrorInfoToCError(ToCBuffer(data->data, &cBuf));
             }
             auto cObjectId = const_cast<char *>(data->id.c_str());
             GoGetEventCallback(cObjectId, cBuf, &cErr, userData);
@@ -1795,6 +1795,15 @@ int CIsDsHealth()
         return 1;
     }
     return 0;
+}
+
+char* CGetActiveMasterAddr()
+{
+    auto [lrt, err] = getLibRuntime();
+    if (!err.OK()) {
+        return "";
+    }
+    return CString(lrt->GetActiveMasterAddr());
 }
 
 #ifdef __cplusplus
