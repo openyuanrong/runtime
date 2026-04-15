@@ -1,5 +1,3 @@
-(overview-installation)=
-
 # 安装指南
 
 openYuanrong 目前支持在 Linux x86_64 及 aarch64 (ARM) 上安装。不同的开发环境安装依赖如下：
@@ -53,11 +51,10 @@ pip install https://openyuanrong.obs.cn-southwest-2.myhuaweicloud.com/release/0.
 [安装 openYuanrong](install-yuanrong-with-pip)后，参考如下命令查看 C++ SDK 路径，应用开发请参考[开发指南](../multi_language_function_programming_interface/development_guide/index.md)。
 
 ```console
-[xxx]# yr version
-CLI version: DEV.
-Using yuanrong at: /home/.miniconda3/envs/yr/lib/python3.9/site-packages/yr/inner
+[xxx]# python3 -c "import yr;print(yr.__path__[0])"
+/usr/local/lib/python3.9/site-packages/yr
 
-[xxx]# ls /home/.miniconda3/envs/yr/lib/python3.9/site-packages/yr/inner/runtime/sdk/cpp/
+[xxx]# ls /usr/local/lib/python3.9/site-packages/yr/cpp/
 bin  include  lib  VERSION
 ```
 
@@ -68,11 +65,10 @@ bin  include  lib  VERSION
 [安装 openYuanrong](install-yuanrong-with-pip)后，参考如下命令查看 Java SDK 路径。其中 `yr-api-sdk-xxx.jar` 为单机程序分布式并行化 SDK，`faas-function-sdk-xxx.jar` 为函数服务 SDK，应用开发请参考[开发指南](../multi_language_function_programming_interface/development_guide/index.md)。
 
 ```console
-[xxx]# yr version
-CLI version: DEV.
-Using yuanrong at: /home/.miniconda3/envs/yr/lib/python3.9/site-packages/yr/inner
+[xxx]# python3 -c "import yr;print(yr.__path__[0])"
+/usr/local/lib/python3.9/site-packages/yr
 
-[xxx]# ls /home/.miniconda3/envs/yr/lib/python3.9/site-packages/yr/inner/runtime/sdk/java/
+[xxx]# ls /usr/local/lib/python3.9/site-packages/yr/java/
 yr-api-sdk-1.0.0.jar faas-function-sdk-1.0.0.jar pom.xml
 ```
 
