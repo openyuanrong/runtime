@@ -9,6 +9,10 @@
 {% endblock %}
 
 {% block extrahead %}
+    {{ super() }}
+    {% if html_baseurl %}
+    <link rel="canonical" href="{{ html_baseurl }}{{ pagename }}.html" />
+    {% endif %}
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     var end = document.querySelector('.navbar-header-items__end');

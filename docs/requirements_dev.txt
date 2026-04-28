@@ -11,3 +11,4 @@ sphinx-copybutton
 sphinx_design
 sphinxcontrib-openapi
 sphinx_togglebutton
+sphinx-sitemap>=2.7.0

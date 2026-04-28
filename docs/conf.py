@@ -74,6 +74,7 @@ exclude_patterns = [
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "sphinx_sitemap",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
@@ -85,7 +86,8 @@ extensions = [
     "breathe",
     "sphinxcontrib.openapi",  # 添加 sphinxcontrib-openapi 扩展
 ]
-
+sitemap_url_scheme = "{link}"
+sitemap_show_lastmod = True
 autoclass_content = "both"
 copybutton_exclude = ".linenos, .gp, .go"
 
@@ -112,7 +114,8 @@ html_favicon = "_static/favicon.ico"
 html_css_files = [
     "custom.css",
 ]
-
+#   确保末尾加上斜杠
+html_baseurl = "https://docs.openyuanrong.org/zh-cn/latest/"
 html_theme_options = {
     "show_navbar_depth": 1,
     "max_navbar_depth": 7,
