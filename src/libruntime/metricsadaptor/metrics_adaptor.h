@@ -160,7 +160,7 @@ private:
     ErrorInfo DoIncreaseDoubleCounter(const YR::Libruntime::DoubleCounterData &data);
     std::pair<ErrorInfo, double> DoGetValueDoubleCounter(const YR::Libruntime::DoubleCounterData &data);
     ErrorInfo InitDoubleGauge(const YR::Libruntime::GaugeData &gauge);
-    ErrorInfo ReportDoubleGauge(const YR::Libruntime::GaugeData &gauge, const std::list<std::string> &contextAttrs);
+    ErrorInfo ReportDoubleGauge(const YR::Libruntime::GaugeData &gauge);
     std::string GetMetricsFilesName(const std::string &backendName);
     ErrorInfo InitAlarm(const std::string &name, const std::string &description);
     ErrorInfo ReportAlarm(const std::string &name, const std::string &description,

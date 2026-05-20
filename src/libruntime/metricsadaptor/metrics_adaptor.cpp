@@ -956,7 +956,7 @@ ErrorInfo MetricsAdaptor::SetGauge(const YR::Libruntime::GaugeData &gauge)
         UpdateMetricSample(gauge, doubleGaugeSamples_, doubleGaugeMap_,
                            [](auto &sample, const auto &data) { sample.value = data.value; });
     }
-    return ReportDoubleGauge(gauge, {"node_id", "ip"});
+    return ReportDoubleGauge(gauge);
 }
 
 ErrorInfo MetricsAdaptor::IncreaseGauge(const YR::Libruntime::GaugeData &gauge)
@@ -984,7 +984,7 @@ ErrorInfo MetricsAdaptor::IncreaseGauge(const YR::Libruntime::GaugeData &gauge)
         const auto sampleIt = doubleGaugeSamples_.find(key);
         currentGauge.value = sampleIt == doubleGaugeSamples_.end() ? gauge.value : sampleIt->second.value;
     }
-    return ReportDoubleGauge(currentGauge, {"node_id", "ip"});
+    return ReportDoubleGauge(currentGauge);
 }
 
 ErrorInfo MetricsAdaptor::DecreaseGauge(const YR::Libruntime::GaugeData &gauge)
@@ -1017,7 +1017,7 @@ ErrorInfo MetricsAdaptor::DecreaseGauge(const YR::Libruntime::GaugeData &gauge)
         const auto sampleIt = doubleGaugeSamples_.find(key);
         currentGauge.value = sampleIt == doubleGaugeSamples_.end() ? gauge.value : sampleIt->second.value;
     }
-    return ReportDoubleGauge(currentGauge, {"node_id", "ip"});
+    return ReportDoubleGauge(currentGauge);
 }
 
 std::pair<ErrorInfo, double> MetricsAdaptor::GetValueGauge(const YR::Libruntime::GaugeData &gauge)
@@ -1059,7 +1059,7 @@ ErrorInfo MetricsAdaptor::ReportMetrics(const YR::Libruntime::GaugeData &gauge)
         UpdateMetricSample(gauge, doubleGaugeSamples_, doubleGaugeMap_,
                            [](auto &sample, const auto &data) { sample.value = data.value; });
     }
-    return ReportDoubleGauge(gauge, {"node_id", "ip"});
+    return ReportDoubleGauge(gauge);
 }
 
 ErrorInfo MetricsAdaptor::ReportGauge(const YR::Libruntime::GaugeData &gauge)
@@ -1067,8 +1067,7 @@ ErrorInfo MetricsAdaptor::ReportGauge(const YR::Libruntime::GaugeData &gauge)
     return SetGauge(gauge);
 }
 
-ErrorInfo MetricsAdaptor::ReportDoubleGauge(const YR::Libruntime::GaugeData &gauge,
-                                            const std::list<std::string> &contextAttrs)
+ErrorInfo MetricsAdaptor::ReportDoubleGauge(const YR::Libruntime::GaugeData &gauge)
 {
     std::unique_lock<std::mutex> l(gauge_mutex_);
     auto err = InitDoubleGauge(gauge);
