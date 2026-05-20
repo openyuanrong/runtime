@@ -83,6 +83,12 @@ public:
                        const YR::Libruntime::AlarmInfo &alarmInfo);
 
 private:
+    enum class MetricOperation {
+        RECORD,
+        STATEFUL,
+        READ,
+    };
+
     struct DoubleGaugeSample {
         std::string name;
         std::string description;
@@ -134,6 +140,9 @@ private:
                                   YR::Libruntime::InstrumentKind instrumentKind);
     ErrorInfo CheckAndRecordInstrumentKind(const std::string &name,
                                            YR::Libruntime::InstrumentKind instrumentKind);
+    ErrorInfo ValidateMetricOperation(const std::string &name,
+                                      YR::Libruntime::InstrumentKind instrumentKind,
+                                      MetricOperation operation);
     std::map<std::string, std::string> BuildPlatformLabels() const;
     MetricsSdk::PointLabels BuildPointLabels(const std::unordered_map<std::string, std::string> &labels) const;
     std::map<std::string, std::string> CanonicalizeLabels(
