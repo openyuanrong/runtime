@@ -227,6 +227,9 @@ func (rs *RoundRobinScheduler) DelInstance(instance *types.Instance) error {
 // ConnectWithInstanceScaler connects instanceScheduler with an instanceScaler, currently connects with replicaScaler
 func (rs *RoundRobinScheduler) ConnectWithInstanceScaler(instanceScaler scaler.InstanceScaler) {
 	rs.instanceScaler = instanceScaler
+	rs.addObservers(scheduler.TriggerScaleTopic, func(data interface{}) {
+		instanceScaler.TriggerScale()
+	})
 	rs.addObservers(scheduler.TotalInsThdTopic, func(data interface{}) {
 		totalInsThdDiff, ok := data.(int)
 		if !ok {

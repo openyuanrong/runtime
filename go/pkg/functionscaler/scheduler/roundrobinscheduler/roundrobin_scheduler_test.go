@@ -41,6 +41,7 @@ type fakeInstanceScaler struct {
 	scaling        bool
 	createErr      error
 	scaleUpFunc    func()
+	triggerCount   int
 }
 
 func (f *fakeInstanceScaler) SetFuncOwner(isManaged bool) {
@@ -50,6 +51,10 @@ func (f *fakeInstanceScaler) SetEnable(enable bool) {
 }
 
 func (f *fakeInstanceScaler) TriggerScale() {
+	f.triggerCount++
+	if f.scaleUpFunc == nil {
+		return
+	}
 	go func() {
 		time.Sleep(10 * time.Millisecond)
 		f.scaleUpFunc()
@@ -332,6 +337,9 @@ func TestConnectWithInstanceScaler(t *testing.T) {
 	rs := NewRoundRobinScheduler("testFunction", true, 10*time.Millisecond)
 	instanceScaler := &fakeInstanceScaler{}
 	rs.ConnectWithInstanceScaler(instanceScaler)
+	_, err := rs.AcquireInstance(&types.InstanceAcquireRequest{})
+	assert.Equal(t, scheduler.ErrNoInsAvailable, err)
+	assert.Equal(t, 1, instanceScaler.triggerCount)
 	rs.AddInstance(&types.Instance{
 		InstanceID:     "instance1",
 		ConcurrentNum:  2,
