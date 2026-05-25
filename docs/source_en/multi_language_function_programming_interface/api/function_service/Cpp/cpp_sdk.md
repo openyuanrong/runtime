@@ -1,4 +1,4 @@
-# CPP FAAS
+# C++ SDK
 
 ```{doxygenclass} Function::Runtime
 ```

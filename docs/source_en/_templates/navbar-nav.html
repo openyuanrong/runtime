@@ -1,0 +1,14 @@
+<ul id="navbar-main-elements" class="navbar-nav">
+  <li class="nav-item{% if pagename == 'getting_started' %} active{% endif %}">
+    <a class="nav-link" href="{{ pathto('getting_started') }}">Getting Started</a>
+  </li>
+  <li class="nav-item{% if pagename == 'use_cases/index' %} active{% endif %}">
+    <a class="nav-link" href="{{ pathto('use_cases/index') }}">Use Cases</a>
+  </li>
+  <li class="nav-item{% if pagename == 'index' %} active{% endif %}">
+    <a class="nav-link" href="{{ pathto('index') }}">Documentation</a>
+  </li>
+  <li class="nav-item{% if pagename == 'reference/blog' %} active{% endif %}">
+    <a class="nav-link" href="{{ pathto('reference/blog') }}">Blog</a>
+  </li>
+</ul>
