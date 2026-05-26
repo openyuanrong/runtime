@@ -9,7 +9,7 @@ Basic API
 .. autosummary::
    :nosignatures:
    :recursive:
-   :toctree: generated/
+   :toctree: ./
 
    yr.init
    yr.is_initialized
@@ -23,14 +23,11 @@ Stateful & Stateless Function API
 
 .. autosummary::
    :nosignatures:
-   :recursive:
-   :toctree: generated/
+   :toctree: ./
 
    yr.invoke
    yr.StatelessFunction
-   yr.StatelessFunction.invoke
    yr.FunctionProxy
-   yr.FunctionProxy.invoke
    yr.instance
    yr.StatefulInstanceCreator
    yr.StatefulInstance
@@ -52,7 +49,7 @@ Data Object API
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.put
    yr.get
@@ -65,7 +62,7 @@ Stream API
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.ProducerConfig
    yr.SubscriptionConfig
@@ -82,7 +79,7 @@ Function Interoperation API
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.cpp_function
    yr.cpp_instance_class
@@ -95,7 +92,7 @@ Function Group API
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.create_function_group
    yr.get_function_group_context
@@ -106,13 +103,12 @@ Function Group API
    yr.device.DataInfo
 
 
-
 Resource Group API
 ----------------------
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.create_resource_group
    yr.remove_resource_group
@@ -123,13 +119,12 @@ Resource Group API
    yr.config.DeploymentConfig
 
 
-
 Group API
 ----------------------
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.group
    yr.config.GroupOptions
@@ -140,7 +135,7 @@ KV Cache API
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.kv_write
    yr.kv_write_with_param
@@ -150,15 +145,15 @@ KV Cache API
    yr.kv_set
    yr.kv_get
    yr.kv_get_with_param
-   yr.runtime.ExistenceOpt
-   yr.runtime.WriteMode
-   yr.runtime.CacheType
-   yr.runtime.ConsistencyType
-   yr.runtime.GetParam
-   yr.runtime.GetParams
-   yr.runtime.SetParam
-   yr.runtime.MSetParam
-   yr.runtime.CreateParam
+   yr.ExistenceOpt
+   yr.WriteMode
+   yr.CacheType
+   yr.ConsistencyType
+   yr.GetParam
+   yr.GetParams
+   yr.SetParam
+   yr.MSetParam
+   yr.CreateParam
 
 
 Observability API
@@ -166,7 +161,7 @@ Observability API
 
 .. autosummary::
    :nosignatures:
-   :toctree: generated/
+   :toctree: ./
 
    yr.Gauge
    yr.Alarm
@@ -183,7 +178,7 @@ Affinity Scheduling
 .. autosummary::
    :nosignatures:
    :recursive:
-   :toctree: generated/
+   :toctree: ./
    
    yr.affinity.AffinityType
    yr.affinity.AffinityKind
@@ -198,7 +193,7 @@ Exceptions
 .. autosummary::
    :nosignatures:
    :recursive:
-   :toctree: generated/
+   :toctree: ./
 
    yr.exception.YRError
    yr.exception.CancelError

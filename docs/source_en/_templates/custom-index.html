@@ -1,0 +1,758 @@
+{% extends "page.html" %}
+
+{% block extrahead %}
+<meta charset="UTF-8">
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "openYuanrong Core Guide",
+        "description": "Quick overview of openYuanrong system's core operations and use cases.",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Getting Started",
+                "description": "Choose from getting started guides to begin using openYuanrong.",
+                "url": "https://docs.openyuanrong.org/en/latest/getting_started.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Installation & Deployment",
+                "description": "Install openYuanrong, including openYuanrong SDK and command-line tool yr installation.",
+                "url": "https://docs.openyuanrong.org/en/latest/deploy/index.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Use Cases",
+                "description": "Use cases in microservices, AI inference.",
+                "url": "https://docs.openyuanrong.org/en/latest/use_cases/index.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Multi-Language Function Programming Interface",
+                "description": "Provides distributed function programming interfaces, supporting Python/Java/C++ languages.",
+                "url": "https://docs.openyuanrong.org/en/latest/multi_language_function_programming_interface/index.html"
+            }
+        ]
+    }
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        darkMode: ['selector', '[data-theme="dark"]'],
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#3b82f6',
+                    secondary: '#1e40af',
+                    accent: '#60a5fa',
+                    neutral: '#f3f4f6',
+                    'neutral-dark': '#1f2937'
+                },
+                fontFamily: {
+                    sans: ['Inter', 'system-ui', 'sans-serif'],
+                },
+            }
+        }
+    }
+</script>
+<style type="text/tailwindcss">
+    @layer utilities {
+        .content-auto {
+            content-visibility: auto;
+        }
+
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .transition-all-300 {
+            transition: all 300ms ease-in-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .slide-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .home-page {
+            margin-left: -1rem !important;
+            margin-right: -1.5rem !important;
+        }
+    }
+
+    .dot-matrix-bg {
+        background-image: radial-gradient(#bbb 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    [data-theme="dark"] .dot-matrix-bg {
+        background-image: radial-gradient(#444 1px, transparent 1px);
+    }
+
+    .dot-matrix-bg::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    [data-theme="dark"] .dot-matrix-bg::after {
+        background: linear-gradient(to top, rgba(18, 18, 18, 0) 0%, rgba(18, 18, 18, 1) 100%);
+    }
+
+    /* Custom scrollbar overall style */
+    ::-webkit-scrollbar {
+        width: 8px !important; /* vertical scrollbar width */
+        height: 8px !important; /* horizontal scrollbar height */
+        display: block !important;
+    }
+
+    /* Scrollbar track (background) */
+    ::-webkit-scrollbar-track {
+        background: transparent !important; /* keep transparent, blend with background */
+    }
+
+    /* Scrollbar thumb (the sliding bar) */
+    ::-webkit-scrollbar-thumb {
+        background-color: #8b8b8b !important; /* use slate-300 transparent color */
+        border-radius: 10px !important; /* rounded corners */
+        border: 1px solid transparent !important; /* trick: add transparent padding to make it look thinner */
+        background-clip: padding-box !important; /* ensure background color doesn't spread below border */
+    }
+
+    /* Darken on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #636363 !important; /* slate-500 */
+    }
+
+    ::-webkit-scrollbar-corner {
+        /* placeholder !* fill scrollbar bottom-right corner *!*/
+    }
+
+    /* s0-8 represents code colors in code blocks */
+    .s0 {
+        @apply text-blue-600 !important;
+    }
+
+    .s2 {
+        color: #871094;
+        font-style: italic;
+    }
+
+    .s3 {
+        @apply text-blue-600 !important;
+        font-style: italic;
+    }
+
+    .s4 {
+        color: #8c8c8c;
+        font-style: italic;
+    }
+
+    .s5 {
+        color: #00627a;
+    }
+
+    .s7 {
+        font-style: italic;
+    }
+
+    .s8 {
+        color: #067d17;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="home-page font-sans text-neutral-dark bg-white fade-in dark:!bg-[#121212]">
+    <!-- Hero Section -->
+    <section class="dot-matrix-bg text-white py-8 md:py-12 relative">
+        <div class="container mx-auto px-4 max-w-4xl text-center relative z-10">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-shadow text-slate-950 dark:!text-slate-100">openYuanrong</h1>
+            <p class="text-lg md:text-xl lg:text-2xl mb-8 font-light text-slate-600 dark:!text-slate-300">openYuanrong is a Serverless
+                distributed computing engine, dedicated to supporting various distributed applications such as AI, big data, and microservices with a unified Serverless architecture.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mb-4">
+                <a href="{{ pathto('getting_started') }}"
+                   class="flex items-center h-10 dark:!bg-slate-700/80 dark:hover:!bg-slate-600 dark:!text-slate-300 bg-white hover:!bg-gray-100 font-medium px-2 rounded-lg shadow-lg transition-all-300 !text-slate-600 tracking-widest">Getting Started</a>
+                <a href="{{ pathto('deploy/index') }}"
+                   class="flex items-center h-10 dark:!bg-slate-700/80 dark:hover:!bg-slate-600 dark:!text-slate-300 bg-white hover:!bg-gray-100 font-medium px-2 rounded-lg shadow-lg transition-all-300 !text-slate-600 tracking-widest">Installation & Deployment</a>
+                <a href="{{ pathto('use_cases/index') }}"
+                   class="flex items-center h-10 dark:!bg-slate-700/80 dark:hover:!bg-slate-600 dark:!text-slate-300 bg-white hover:!bg-gray-100 font-medium px-2 rounded-lg shadow-lg transition-all-300 !text-slate-600 tracking-widest">Examples</a>
+                <div class="relative group" id="dropdown-container">
+                    <button id="dropdown-button"
+                            class="flex items-center dark:!bg-blue-500/70 dark:!text-slate-300 h-10 bg-slate-950 shadow-lg text-white font-medium px-2 rounded-lg transition-all-300 flex items-center space-x-1 tracking-widest">
+                        <img src="_static/gitcode-logo.png" alt="gitcode-logo"
+                             class="mt-0.5 h-4 w-auto object-contain !bg-transparent !brightness-0 !invert dark:!opacity-75">
+                        <span>Source Repos </span>
+                        <i class="w-2 h-2 border-b-2 border-r-2 border-current rotate-45 transform"></i>
+                    </button>
+                    <!-- Dropdown menu -->
+                    <div class="absolute top-full -translate-x-1/2 left-1/2 p-2 dark:!bg-slate-700/80 bg-white backdrop-blur-xl border border-white dark:!border-slate-700/80 shadow-xl rounded-2xl invisible opacity-0 scale-95 -translate-y-2 group-hover:!visible group-hover:!opacity-100 group-hover:!scale-100 group-hover:!translate-y-0 transition-all duration-200 ease-out origin-top-left">
+                        <div class="p-2 divide-y divide-slate-100 dark:!divide-slate-600/50">
+                            <a href="https://atomgit.com/openeuler/yuanrong" target="_blank" rel="noopener noreferrer"
+                               class="text-sm block py-2 dark:!text-slate-300 dark:hover:!bg-slate-600 !text-slate-500 hover:!bg-slate-50 rounded">
+                                <div class="font-medium hover:!underline whitespace-nowrap">
+                                    Multi-Language Function Runtime
+                                    {{ icon_external_link_gray }}
+                                </div>
+                                <div class="whitespace-nowrap">yuanrong</div>
+                            </a>
+                            <a href="https://atomgit.com/openeuler/yuanrong-datasystem" target="_blank"
+                               rel="noopener noreferrer"
+                               class="text-sm block py-2 dark:!text-slate-300 dark:hover:!bg-slate-600 !text-slate-500 hover:!bg-slate-50 rounded">
+                                <div class="font-medium hover:!underline whitespace-nowrap">
+                                    Data System
+                                    {{ icon_external_link_gray }}
+                                </div>
+                                <div class="whitespace-nowrap">yuanrong-datasystem</div>
+                            </a>
+                            <a href="https://atomgit.com/openeuler/yuanrong-functionsystem" target="_blank"
+                               rel="noopener noreferrer"
+                               class="text-sm block px-2 py-2 dark:!text-slate-300 dark:hover:!bg-slate-600 !text-slate-500 hover:!bg-slate-50 rounded">
+                                <div class="font-medium hover:!underline whitespace-nowrap">
+                                    Function System
+                                    {{ icon_external_link_gray }}
+                                </div>
+                                <div class="whitespace-nowrap">yuanrong-functionsystem</div>
+                            </a>
+                            <a href="https://www.openeuler.openatom.cn/zh/sig/sig-YuanRong#repositories" target="_blank"
+                               rel="noopener noreferrer"
+                               class="text-sm block px-2 py-2 dark:!text-slate-300 dark:hover:!bg-slate-600 !text-slate-500 hover:!bg-slate-50 rounded">
+                                <div class="font-medium hover:!underline whitespace-nowrap">
+                                    More
+                                    {{ icon_external_link_gray }}
+                                </div>
+                                <div class="whitespace-nowrap">View All Repositories</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Scenarios -->
+    <section id="scene"
+             class="py-16 md:py-20 dark:!bg-[#121212]  bg-slate-50/50 shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)]">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-4 text-slate-900 dark:!text-slate-200 tracking-wide">
+                Application Scenarios</h2>
+            <p class="text-base md:text-lg lg:text-xl mb-8 font-light text-slate-600 text-center dark:!text-slate-300">Suitable for AI
+                computing and general-purpose workloads</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 px-16">
+                <div class="dark:!bg-slate-700/40 bg-white border border-gray-200 dark:!border-blue-500 rounded-xl p-8 hover:!border-primary hover:!shadow-lg transition-all-300 dark:hover:!border-blue-300 dark:hover:!shadow-[0_10px_30px_-10px_rgba(59,130,246,0.5)]">
+                    <h3 class="text-lg font-bold !text-blue-500 leading-relaxed">Distributed Parallelization for Single-Machine Programs</h3>
+                    <p class="text-slate-500 dark:!text-slate-400 text-sm leading-relaxed">Using Python, C++, Java multi-language
+                        SDKs, just a few lines of code to run single-machine programs in distributed parallel, simplifying distributed application development.</p>
+                </div>
+                <div class="dark:!bg-slate-700/40 bg-white border border-gray-200 dark:!border-blue-500 rounded-xl p-8 hover:!border-primary hover:!shadow-lg transition-all-300 dark:hover:!border-blue-300 dark:hover:!shadow-[0_10px_30px_-10px_rgba(59,130,246,0.5)]">
+                    <h3 class="text-lg font-bold !text-blue-500 leading-relaxed">AI Agent</h3>
+                    <p class="text-slate-500 dark:!text-slate-400 text-sm leading-relaxed">Provides lightweight, flexible, sandbox-style secure isolation, extreme elastic Agent runtime, with native support for distributed
+                        wait/notify APIs, improving Agent throughput.</p>
+                </div>
+                <div class="dark:!bg-slate-700/40 bg-white border border-gray-200 dark:!border-blue-500 rounded-xl p-8 hover:!border-primary hover:!shadow-lg transition-all-300 dark:hover:!border-blue-300 dark:hover:!shadow-[0_10px_30px_-10px_rgba(59,130,246,0.5)]">
+                    <h3 class="text-lg font-bold !text-blue-500 leading-relaxed">Reinforcement Learning</h3>
+                    <p class="text-slate-500 dark:!text-slate-400 text-sm" leading-relaxed>Integrated with Verl, it is the best distributed backend for asynchronous training on Ascend clusters. Integrated with TransferQueue
+                        for efficient data flow in post-training systems.</p>
+                </div>
+                <div class="dark:!bg-slate-700/40 bg-white border border-gray-200 dark:!border-blue-500 rounded-xl p-8 hover:!border-primary hover:!shadow-lg transition-all-300 dark:hover:!border-blue-300 dark:hover:!shadow-[0_10px_30px_-10px_rgba(59,130,246,0.5)]">
+                    <h3 class="text-lg font-bold !text-blue-500 leading-relaxed">Inference</h3>
+                    <p class="text-slate-500 dark:!text-slate-400 text-sm leading-relaxed">Integrated with vLLM-Omni
+                        to support full-modality model inference, distributed multi-level cache supports Ascend/GPU hardware D2H/H2D/D2D/RH2D transmission, improving inference performance.</p>
+                </div>
+                <div class="dark:!bg-slate-700/40 bg-white border border-gray-200 dark:!border-blue-500 rounded-xl p-8 hover:!border-primary hover:!shadow-lg transition-all-300 dark:hover:!border-blue-300 dark:hover:!shadow-[0_10px_30px_-10px_rgba(59,130,246,0.5)]">
+                    <h3 class="text-lg font-bold !text-blue-500 leading-relaxed">Super Node</h3>
+                    <p class="text-slate-500 dark:!text-slate-400 text-sm leading-relaxed">Native support for Lingqu Super Node, hardware-affinity, fully unleashing hardware performance.</p>
+                </div>
+                <div class="dark:!bg-slate-700/40 bg-white border border-gray-200 dark:!border-blue-500 rounded-xl p-8 hover:!border-primary hover:!shadow-lg transition-all-300 dark:hover:!border-blue-300 dark:hover:!shadow-[0_10px_30px_-10px_rgba(59,130,246,0.5)]">
+                    <h3 class="text-lg font-bold !text-blue-500 leading-relaxed">Microservices</h3>
+                    <p class="text-slate-500 dark:!text-slate-400 text-sm leading-relaxed">Compatible with Spring Boot microservice framework, supporting microservices deployed as Serverless services on
+                        openYuanrong clusters, enjoying benefits like elasticity and zero maintenance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Concepts -->
+    <section id="concept" class="py-4 md:py-6 slide-up shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)]">
+        <div class="container mx-auto px-6 py-16">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-4 text-slate-900 dark:!text-slate-200 tracking-wide">
+                Key Concepts</h2>
+            <p class="text-base md:text-lg lg:text-xl mb-8 font-light text-slate-600 dark:!text-slate-300 text-center">openYuanrong
+                aims to provide powerful support for your AI platform and optimize any workload at any scale.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-10">
+                <div class="group relative flex items-start gap-6 p-6 rounded-3xl transition-all duration-300 dark:!bg-slate-700/40 dark:hover:!bg-slate-600/80 hover:!bg-white/40 hover:!shadow-lg transition-all-300">
+                    <div class="relative flex-shrink-0">
+                        <div class="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full opacity-0 group-hover:!opacity-100 transition-opacity"></div>
+                        <div class="relative z-10 w-14 h-14 flex items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-200 text-blue-500 dark:!bg-blue-500 dark:!border-blue-500 dark:!text-slate-100 dark:group-hover:!border-blue-500 text-2xl group-hover:!border-blue-300 group-hover:!scale-110 transition-all duration-300">
+                            {{ icon_runtime }}
+                        </div>
+                        <div class="absolute top-16 left-1/2 -translate-x-1/2 w-px h-12 bg-gradient-to-b from-slate-200 dark:!from-blue-500 to-transparent hidden lg:block"></div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-800 dark:!text-blue-500 mb-1 flex items-center gap-3">Multi-Language Function Runtime</h3>
+                        <p class="mb-1.5 text-sm leading-relaxed text-slate-500 dark:!text-slate-400 max-w-md">
+                            Provides distributed function programming, supporting Python/Java/C++ languages, achieving high-performance distributed execution with single-machine programming experience.
+                        </p>
+                        <a href="https://atomgit.com/openeuler/yuanrong" target="_blank" rel="noopener noreferrer"
+                           class="text-[12px] tracking-widest bg-blue-50 dark:!bg-blue-200 !text-blue-500 hover:!text-blue-400 px-3 py-1.5 rounded-full font-bold whitespace-nowrap">
+                            yuanrong
+                            {{ icon_external_link_light }}
+                        </a>
+                    </div>
+                </div>
+                <div class="group relative flex items-start gap-6 p-6 rounded-3xl transition-all duration-300 dark:!bg-slate-700/40 dark:hover:!bg-slate-600/80 hover:!bg-white/40 hover:!shadow-lg transition-all-300">
+                    <div class="relative flex-shrink-0">
+                        <div class="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full opacity-0 group-hover:!opacity-100 transition-opacity"></div>
+                        <div class="relative z-10 w-14 h-14 flex items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-200 text-blue-500 dark:!bg-blue-500 dark:!border-blue-500 dark:!text-slate-100 dark:group-hover:!border-blue-500 text-xl group-hover:!border-blue-300 group-hover:!scale-110 transition-all duration-300">
+                            {{ icon_function_system }}
+                        </div>
+                        <div class="absolute top-16 left-1/2 -translate-x-1/2 w-px h-12 bg-gradient-to-b from-slate-200 dark:!from-blue-500 to-transparent hidden lg:block"></div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-800 dark:!text-blue-500 mb-1 flex items-center gap-3">Function System</h3>
+                        <p class="mb-1.5 text-sm leading-relaxed text-slate-500 dark:!text-slate-400 max-w-md">
+                            Provides large-scale distributed dynamic scheduling, supporting rapid elastic scaling and cross-node migration of function instances, achieving efficient cluster resource utilization.
+                        </p>
+                        <a href="https://atomgit.com/openeuler/yuanrong-functionsystem" target="_blank"
+                           rel="noopener noreferrer"
+                           class="text-[12px] tracking-widest bg-blue-50 dark:!bg-blue-200 !text-blue-500 hover:!text-blue-400 px-3 py-1.5 rounded-full font-bold whitespace-nowrap">
+                            yuanrong-functionsystem {{ icon_external_link_light }}
+                        </a>
+                    </div>
+                </div>
+                <div class="group relative flex items-start gap-6 p-6 rounded-3xl transition-all duration-300 dark:!bg-slate-700/40 dark:hover:!bg-slate-600/80 hover:!bg-white/40 hover:!shadow-lg transition-all-300">
+                    <div class="relative flex-shrink-0">
+                        <div class="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full opacity-0 group-hover:!opacity-100 transition-opacity"></div>
+                        <div class="relative z-10 w-14 h-14 flex items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-200 text-blue-500 dark:!bg-blue-500 dark:!border-blue-500 dark:!text-slate-100 dark:group-hover:!border-blue-500 text-xl group-hover:!border-blue-300 group-hover:!scale-110 transition-all duration-300">
+                            {{ icon_data_system }}
+                        </div>
+                        <div class="absolute top-16 left-1/2 -translate-x-1/2 w-px h-12 bg-gradient-to-b from-slate-200 dark:!from-blue-500 to-transparent hidden lg:block"></div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-800 dark:!text-blue-500 mb-1 flex items-center gap-3">Data System</h3>
+                        <p class="mb-1.5 text-sm leading-relaxed text-slate-500 dark:!text-slate-400 max-w-md">
+                            Provides heterogeneous distributed multi-level cache, supporting Object/Stream semantics, achieving high-performance data sharing and passing between function instances.
+                        </p>
+                        <div>
+                            <a href="https://atomgit.com/openeuler/yuanrong-datasystem" target="_blank"
+                               rel="noopener noreferrer"
+                               class="text-[12px] tracking-widest bg-blue-50 dark:!bg-blue-200 !text-blue-500 hover:!text-blue-400 px-3 py-1.5 rounded-full font-bold whitespace-nowrap">
+                                yuanrong-datasystem
+                                {{ icon_external_link_light }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="group relative flex items-start gap-6 p-6 rounded-3xl transition-all duration-300 dark:!bg-slate-700/40 dark:hover:!bg-slate-600/80 hover:!bg-white/40 hover:!shadow-lg transition-all-300">
+                    <div class="relative flex-shrink-0">
+                        <div class="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full opacity-0 group-hover:!opacity-100 transition-opacity"></div>
+                        <div class="relative z-10 w-14 h-14 flex items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-200 text-blue-500 dark:!bg-blue-500 dark:!border-blue-500 dark:!text-slate-100 dark:group-hover:!border-blue-500 text-xl group-hover:!border-blue-300 group-hover:!scale-110 transition-all duration-300">
+                            {{ icon_toolbox }}
+                        </div>
+                        <div class="absolute top-16 left-1/2 -translate-x-1/2 w-px h-12 bg-gradient-to-b from-slate-200 dark:!from-blue-500 to-transparent hidden lg:block"></div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg mb-0.5 font-bold text-slate-800 dark:!text-blue-500 flex items-center gap-3">Ecosystem & Tools</h3>
+                        <p class="text-sm mb-1 leading-relaxed text-slate-500 dark:!text-slate-400 max-w-md">
+                            Spring adaptor/ray adaptor and other ecosystem compatibility.
+<!--                            placeholder character-->
+                            <span class="invisible">*******************************</span>
+                        </p>
+                        <div>
+                            <a href="https://gitcode.com/openeuler/spring-adapter" target="_blank" rel="noopener noreferrer"
+                               class="mt-0.5 inline-block whitespace-nowrap text-[12px] tracking-widest bg-blue-50 dark:!bg-blue-200 !text-blue-500 hover:!text-blue-400 px-3 py-1.5 mr-1.5 rounded-full font-bold">
+                                spring-adapter
+                                {{ icon_external_link_light }}
+                            </a>
+                            <a href="https://gitcode.com/openeuler/ray-adapter" target="_blank" rel="noopener noreferrer"
+                               class="mt-0.5 inline-block whitespace-nowrap text-[12px] tracking-widest bg-blue-50 dark:!bg-blue-200 !text-blue-500 hover:!text-blue-400 px-3 py-1.5 rounded-full font-bold">
+                                ray-adapter
+                                {{ icon_external_link_light }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Example Code -->
+    <section id="code" class="py-4 md:py-6 slide-up shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)] bg-slate-50/50 dark:!bg-[#121212]">
+        <div class="max-w-7xl mx-auto px-4 py-16">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-10 text-slate-900 dark:!text-slate-200 tracking-wide">Extend Applications with openYuanrong</h2>
+            <div class="flex flex-col items-center justify-center md:flex-row gap-8 p-8 rounded-3xl bg-white/40 dark:!bg-slate-700/40 backdrop-blur-xl border !border-white/20 shadow-2xl items-stretch h-[430px]">
+                <!-- Left tab column -->
+                <div class="w-full md:w-1/3 flex-shrink-0">
+                    <ul class="space-y-3" role="tablist">
+                        <li role="presentation">
+                            <button class="w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all duration-150 group
+                         bg-blue-50 border border-blue-100 hover:!bg-slate-100 dark:!bg-slate-600/80  dark:!border-slate-600/80 dark:hover:!bg-slate-600/80 shadow-sm"
+                                    id="tab-1" role="tab" aria-selected="true" aria-controls="panel-1">
+                                <div class="w-2 h-8 rounded-full bg-blue-600 group-hover:!bg-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.5)]"></div>
+                                <div>
+                                    <h4 class="font-bold text-lg !text-blue-600">
+                                        Inference
+                                    </h4>
+                                    <p class="text-sm text-blue-500 mt-1">Fast elastic scaling of inference instances using data system</p>
+                                </div>
+                            </button>
+                        </li>
+                        <li role="presentation">
+                            <button class="w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all duration-150 group
+                            hover:!bg-slate-100 dark:hover:!bg-slate-600/80" id="tab-2" role="tab" aria-selected="false" aria-controls="panel-2">
+                                <div class="w-2 h-2 rounded-full bg-slate-300 group-hover:!bg-blue-400 ml-1 transition-colors"></div>
+
+                                <div class="ml-1">
+                                    <h4 class="font-bold text-lg !text-slate-800 dark:!text-slate-300">
+                                        Microservices
+                                    </h4>
+                                    <p class="text-sm text-slate-500 dark:!text-slate-400 mt-1">Migrate traditional microservices using Spring adapter</p>
+                                </div>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Code box -->
+                <div class="relative flex flex-shrink-0 flex-col items-start justify-start w-full md:w-2/3 rounded-2xl shadow-inner border border-slate-800 dark:!border-white/20 font-mono text-sm h-[351px]">
+                    <!-- Code content -->
+                    <div class="!text-slate-800 leading-relaxed w-full rounded-2xl">
+                        <pre class="h-[351px] rounded-2xl !border-none" id="panel-1" role="tabpanel" aria-labelledby="tab-1">{% include "inferring.html" %}</pre>
+                        <pre class="hidden h-[351px] rounded-2xl !border-none" id="panel-2" role="tabpanel" aria-labelledby="tab-2">{% include "microservices.html" %}</pre>
+                    </div>
+                    <!-- Full case link -->
+                    <div class="w-full" id="panel-header-1" role="tabpanel" aria-labelledby="tab-1">
+                        <a href="{{ pathto('use_cases/accelerate_llm_instance_scaling') }}"
+                           class="absolute underline underline-offset-4 decoration-blue-500 hover:!decoration-1 hover:!decoration-blue-400 -bottom-8 right-2 text-blue-500 hover:!text-blue-400 mr-3 text-sm tracking-wide">Full Example</a>
+                    </div>
+                    <div class="w-full hidden" id="panel-header-2" role="tabpanel" aria-labelledby="tab-2">
+                        <a href="{{ pathto('use_cases/microservice-serverless') }}"
+                           class="absolute underline underline-offset-4 decoration-blue-500 hover:!decoration-1 hover:!decoration-blue-400 -bottom-8 right-2 text-blue-500 hover:!text-blue-400 mr-3 text-sm tracking-wide">Full Example</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dive Deeper -->
+    <section id="insight" class="py-16 md:py-20 slide-up shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)]">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="mb-12 w-fit">
+                <h2 class="w-fit text-xl md:text-2xl lg:text-3xl font-bold text-slate-800 dark:!text-slate-200 tracking-wide
+                    after:content-[''] after:block after:h-1.5 after:w-full after:bg-blue-500 after:mt-2 after:rounded-full">
+                    Dive Deeper
+                </h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="dark:!bg-slate-700/40 dark:!border-white/20 dark:hover:!border-blue-400 flex flex-col group bg-white p-10 !pb-6 rounded-3xl border border-slate-200 shadow-sm hover:!shadow-md hover:!border-blue-400 transition-all duration-300">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-500 dark:!bg-blue-200 dark:!text-blue-500 dark:group-hover:!text-slate-100 mb-4 group-hover:!bg-blue-500 group-hover:!text-white transition-colors">
+                            {{ icon_plug }}
+                        </div>
+                        <h3 class="h-10 text-xl font-bold text-slate-800 dark:!text-blue-500 mb-2">Multi-Language Function Programming Interface</h3>
+                    </div>
+                    <p class="flex-1 text-slate-500 dark:!text-slate-400 leading-relaxed text-sm">
+                        Extend general-purpose Python, C++, Java code with simple, unified primitives, achieving fine-grained control over building distributed applications.
+                    </p>
+                    <div class="mt-6 pt-3 border-t border-slate-100 dark:!border-white/20">
+                        <a href="{{ pathto('multi_language_function_programming_interface/index') }}"
+                           class="group font-bold !text-blue-500 hover:!text-blue-400 text-sm flex items-center tracking-wide">
+                            Learn More&thinsp;{{ icon_blue_circle_right }}
+                        </a>
+                    </div>
+                </div>
+
+                <div class="dark:!bg-slate-700/40 dark:!border-white/20 dark:hover:!border-blue-400 flex flex-col group bg-white p-10 !pb-6 rounded-3xl border border-slate-200 shadow-sm hover:!shadow-md hover:!border-blue-400 transition-all duration-300">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-500 dark:!bg-blue-200 dark:!text-blue-500 dark:group-hover:!text-slate-100 mb-4 group-hover:!bg-blue-500 group-hover:!text-white transition-colors">
+                            {{ icon_nodes }}
+                        </div>
+                        <h3 class="h-10 text-xl font-bold text-slate-800 dark:!text-blue-500 mb-2">openYuanrong Cluster</h3>
+                    </div>
+                    <p class="flex-1 text-slate-500 dark:!text-slate-400 leading-relaxed text-sm">
+                        Deploy openYuanrong clusters on hosts or Kubernetes to seamlessly scale production workloads.
+                    </p>
+                    <div class="mt-6 pt-3 border-t border-slate-100 dark:!border-white/20">
+                        <a href="{{ pathto('deploy/index') }}"
+                           class="group font-bold !text-blue-500 hover:!text-blue-400 text-sm flex items-center tracking-wide">
+                            Learn More&thinsp;{{ icon_blue_circle_right }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Blog Posts -->
+    <section id="blog" class="py-16 md:py-20 slide-up shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)] bg-slate-50/50 dark:!bg-[#121212]">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="mb-3 w-full">
+                <h2 class="w-fit text-xl md:text-2xl lg:text-3xl font-bold text-slate-800 dark:!text-slate-200 tracking-wide
+                    after:content-[''] after:block after:h-1.5 after:w-full after:bg-blue-500 after:mt-2 after:rounded-full">
+                    Latest Blog Posts
+                </h2>
+            </div>
+            <div class=" flex justify-end">
+                <a href="{{ pathto('reference/blog') }}"
+                   class="group !text-blue-500 hover:!text-blue-400 text-base flex items-center tracking-wide">
+                    View All&thinsp;{{ icon_blue_circle_right }}
+                </a>
+            </div>
+
+            <div class="flex gap-x-4 overflow-x-auto pt-3 snap-x snap-mandatory scrollbar-hide">
+                {% for blog in blog_data %}
+                <div class="flex flex-col flex-shrink-0 w-[25rem] bg-white rounded-2xl p-6 snap-start
+            border border-slate-100 shadow-sm
+            hover:shadow-2xl hover:shadow-blue-200/40 hover:-translate-y-1.5 hover:border-blue-100
+            transition-all duration-300 group dark:!bg-slate-700/40 dark:!border-white/20 dark:hover:!bg-slate-600/80">
+                    <h3 class="text-xl font-bold text-slate-800 dark:!text-blue-500 mb-3">{{ blog.title }}</h3>
+
+                    <p class="flex-1 text-slate-500 dark:!text-slate-400 leading-relaxed text-sm mb-4">
+                        {{ blog.description }}
+                    </p>
+
+                    <div class="flex items-center justify-between !pt-5 border-t border-slate-100 dark:!border-white/20">
+                        <div class="flex items-center gap-4 text-[0.75rem] font-medium">
+                            <div class="flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full bg-blue-50 dark:!bg-blue-200 !text-blue-500  border border-blue-100/50">
+                                {{ icon_calendar }}
+                                <span>{{ blog.date }}</span>
+                            </div>
+
+                            <div class="flex items-center gap-1.5 text-slate-500 group-hover:text-blue-500 transition-colors">
+                                {{ icon_clock }}
+                                <span>{{ blog.read_time }} min read</span>
+                            </div>
+                        </div>
+                        <a href="{{ blog.link }}" target="_blank"
+                           class="group !text-blue-500 hover:!text-blue-400 text-sm flex items-center tracking-wide">
+                            Read More&thinsp;{{ icon_external_link }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Get Involved -->
+    <section id="home-footer" class="py-14 md:py-16 slide-up shadow-[inset_0_20px_20px_-20px_rgba(0,0,0,0.05)] bg-slate-50/50 dark:!bg-[#121212]">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="mb-10 w-fit">
+                <h2 class="w-fit text-xl md:text-2xl lg:text-3xl font-bold text-slate-800 dark:!text-slate-200 tracking-wide">
+                    Get Involved
+                </h2>
+                <p class="mt-4 text-slate-500 dark:!text-slate-400 leading-relaxed">Join our global developer community to build an open and transparent openYuanrong ecosystem together.</p>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 dark:!text-slate-300 mb-6 flex items-center gap-2">
+                        {{ icon_message }}
+                        Join Us
+                    </h3>
+                    <ul class="space-y-4">
+                        <li><a href="https://mailweb.openeuler.org/postorius/lists/yuanrong@openeuler.org"
+                               target="_blank" class="text-sm flex items-center !text-slate-500 dark:!text-slate-400 hover:!text-blue-500">
+                            Subscribe to Newsletter&thinsp;{{ icon_external_link_gray }}
+                        </a></li>
+                        <li><a href="https://www.zhihu.com/people/vvxgakv3/posts"
+                               target="_blank" class="text-sm flex items-center !text-slate-500 dark:!text-slate-400 hover:!text-blue-500">
+                            Follow Us on Zhihu&thinsp;{{ icon_external_link_gray }}
+                        </a></li>
+                        <li><a href="https://www.openeuler.openatom.cn/zh/sig/sig-YuanRong#recent-meeting"
+                               target="_blank" class="text-sm flex items-center !text-slate-500 dark:!text-slate-400 hover:!text-blue-500">
+                            Attend SIG Meetings&thinsp;{{ icon_external_link_gray }}
+                        </a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 dark:!text-slate-300 mb-6 flex items-center gap-2">
+                        {{ icon_headset }}
+                        Get Support
+                    </h3>
+                    <ul class="space-y-4">
+                        <li>
+                            <div class="relative group inline-block">
+                                <a href="#" target="_blank"
+                                   class="text-sm flex items-center !text-slate-500 dark:!text-slate-400 hover:!text-blue-500">
+                                    Official WeChat Group&thinsp;{{ icon_rotate_circle_right }}
+                                </a>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 w-80 p-6
+                                bg-white dark:!bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:!border-slate-800
+                                invisible opacity-0 translate-y-2 scale-95
+                                group-hover:!visible group-hover:!opacity-100 group-hover:!translate-y-0 group-hover:!scale-100
+                                transition-all duration-300 ease-out origin-bottom z-50">
+                                    <h3 class="text-lg font-bold text-slate-800 dark:!text-slate-300 mb-1 text-left">
+                                        {{ icon_wechat }}
+                                        Official WeChat Group
+                                    </h3>
+
+                                    <p class="text-sm text-slate-500 dark:!text-slate-400 mb-4 text-left leading-relaxed">
+                                        Join the official WeChat group to get the latest news and technical shares about openYuanrong.
+                                    </p>
+                                    <img src="_static/qrcode.png" alt="wx-qr-code" class="dark:!brightness-50 rounded-lg">
+                                    <p class="text-sm text-slate-500 text-center dark:!text-slate-400 mb-4 text-left leading-relaxed">
+                                        Scan the QR code to add the openYuanrong assistant
+                                    </p>
+                                    <!-- Triangle below border -->
+                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white dark:!border-t-slate-800">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a href="https://atomgit.com/openeuler/yuanrong/issues/create/choose" target="_blank"
+                               class="text-sm flex items-center !text-slate-500 dark:!text-slate-400 hover:!text-blue-500">
+                            Submit an Issue&thinsp;{{ icon_external_link_gray }}
+                        </a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 dark:!text-slate-400 mb-6 flex items-center gap-2">
+                        {{ icon_handshake }}
+                        Contribute to openYuanrong
+                    </h3>
+                    <ul class="space-y-4">
+                        <li><a href="{{ pathto('contributor_guide/index') }}"
+                               class="text-sm group flex items-center !text-slate-500 dark:!text-slate-400 hover:!text-blue-500">
+                            Contributor Guide&thinsp;{{ icon_circle_right }}
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript -->
+    <script>
+        // Tab switching
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('[role="tab"]');
+            const panels = document.querySelectorAll('[role="tabpanel"]');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 1. Reset all tab states
+                    tabs.forEach(t => {
+                        t.setAttribute('aria-selected', 'false');
+                        // Remove active styles
+                        t.classList.remove('bg-blue-50', 'border', 'border-blue-100', 'dark:!bg-slate-600/80',  'dark:!border-slate-600/80', 'shadow-sm');
+                        t.querySelector('h4').classList.replace('!text-blue-600', '!text-slate-800');
+                        t.querySelector('h4').classList.add('dark:!text-slate-300');
+                        t.querySelector('p').classList.replace('text-blue-500', 'text-slate-500');
+                        t.querySelector('p').classList.add('dark:!text-slate-400');
+                        // Hide active glow, show gray dot
+                        const halo = t.querySelector('.w-2');
+                        halo.classList.replace('bg-blue-600', 'bg-slate-300');
+                        halo.classList.remove('h-8');
+                        halo.classList.add('h-2');
+                    });
+
+                    // 2. Activate current tab
+                    tab.setAttribute('aria-selected', 'true');
+                    tab.classList.add('bg-blue-50', 'border', 'border-blue-100', 'dark:!bg-slate-600/80',  'dark:!border-slate-600/80', 'shadow-sm');
+                    tab.querySelector('h4').classList.replace('!text-slate-800', '!text-blue-600');
+                    tab.querySelector('h4').classList.remove('dark:!text-slate-300');
+                    tab.querySelector('p').classList.replace('text-slate-500', 'text-blue-500');
+                    tab.querySelector('p').classList.remove('dark:!text-slate-400');
+                    // Show active glow
+                    const halo = tab.querySelector('.w-2');
+                    halo.classList.replace('bg-slate-300', 'bg-blue-600');
+                    halo.classList.replace('h-2', 'h-8');
+
+                    // 3. Switch code panels
+                    panels.forEach(panel => {
+                        // Check if this panel is controlled by the currently clicked button
+                        if (panel.getAttribute('aria-labelledby') === tab.id) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        });
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Animate elements entering viewport on scroll
+        function handleScrollAnimation() {
+            const elements = document.querySelectorAll('.slide-up');
+            const windowHeight = window.innerHeight;
+
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Initial check
+        window.addEventListener('DOMContentLoaded', handleScrollAnimation);
+
+        // Check on scroll - use throttle function to optimize performance
+        function throttle(func, wait) {
+            let timeout;
+            return function () {
+                const context = this;
+                const args = arguments;
+                if (!timeout) {
+                    timeout = setTimeout(() => {
+                        timeout = null;
+                        func.apply(context, args);
+                    }, wait);
+                }
+            };
+        }
+
+        // Use throttle function to optimize scroll events
+        window.addEventListener('scroll', throttle(handleScrollAnimation, 16));
+    </script>
+</div>
+{% endblock %}
