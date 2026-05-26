@@ -8,7 +8,7 @@
    
    Python/index
    Cpp/cpp_sdk
-   Java/java_sdk.md
+   Java/java_sdk
    function_invocation
    stream_invocation
    session_interrupt

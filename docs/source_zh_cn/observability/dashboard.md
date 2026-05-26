@@ -46,7 +46,7 @@ yr start --enable_collector=true \
 --enable_metrics=true \
 --metrics_config_file={absolute file path} \
 --npu_collection_mode=all \
---master_info "local_ip:x.x.x.x,master_ip:x.x.x.x,etcd_ip:x.x.x.x,etcd_port:32379,global_scheduler_port:22770,ds_master_port:12123,etcd_peer_port:32380,bus-proxy:22772,bus:22773,ds-worker:31501,dashbaord_port:9080,"
+--master_info "local_ip:x.x.x.x,master_ip:x.x.x.x,etcd_ip:x.x.x.x,etcd_port:32379,global_scheduler_port:22770,ds_master_port:12123,etcd_peer_port:32380,bus-proxy:22772,bus:22773,ds-worker:31501,dashboard_port:9080,"
 ```
 
 ## 页面介绍

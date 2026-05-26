@@ -1,4 +1,4 @@
-# Implementing Reinforcement Learning Maze Based on openYuanrong
+﻿# Implementing Reinforcement Learning Maze Based on openYuanrong
 
 Reinforcement learning is a branch of machine learning where machines interact with the environment by observing it and taking actions to maximize expected rewards. In short, it's about teaching machines how to learn and accumulate experience through continuous trial and error to achieve high rewards.
 
