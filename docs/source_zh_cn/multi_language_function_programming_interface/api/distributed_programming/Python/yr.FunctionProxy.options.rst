@@ -3,7 +3,7 @@
 yr.FunctionProxy.options
 -----------------------------------------------------
 
-.. py:method:: FunctionProxy.options(invoke_options: InvokeOptions) -> "FunctionProxy"
+.. py:method:: FunctionProxy.options(invoke_options: InvokeOptions) -> FunctionProxy
 
     动态修改被装饰函数的调用参数。
 

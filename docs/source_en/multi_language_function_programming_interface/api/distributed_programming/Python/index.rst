@@ -126,7 +126,7 @@ Group API
    :nosignatures:
    :toctree: ./
 
-   yr.group
+   yr.Group
    yr.config.GroupOptions
 
 

@@ -3,7 +3,7 @@
 yr.StatelessFunction.options
 ----------------------------
 
-.. py:method:: StatelessFunction.options(invoke_options: InvokeOptions) -> "StatelessFunction"
+.. py:method:: StatelessFunction.options(invoke_options: InvokeOptions) -> StatelessFunction
 
     动态修改被装饰函数的调用参数。
 

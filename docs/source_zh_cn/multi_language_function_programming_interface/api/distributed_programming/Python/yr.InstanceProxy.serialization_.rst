@@ -1,6 +1,6 @@
 .. _serialization_:
 
-yr.InstanceProxy.serialization_
+yr.InstanceProxy.serialization\_
 ----------------------------------------------------------------
 
 .. py:method:: InstanceProxy.serialization_(is_cross_language: False)

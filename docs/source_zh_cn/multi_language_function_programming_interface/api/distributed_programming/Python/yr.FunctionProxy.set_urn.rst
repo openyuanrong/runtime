@@ -3,7 +3,7 @@
 yr.FunctionProxy.set_urn
 ----------------------------------------------------
 
-.. py:method:: FunctionProxy.set_urn(urn: str) -> "FunctionProxy"
+.. py:method:: FunctionProxy.set_urn(urn: str) -> FunctionProxy
 
     设置函数组大小。
 

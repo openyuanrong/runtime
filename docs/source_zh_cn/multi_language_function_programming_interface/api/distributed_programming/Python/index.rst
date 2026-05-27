@@ -23,9 +23,7 @@ Python
 
    yr.invoke
    yr.StatelessFunction
-   yr.StatelessFunction.invoke
    yr.FunctionProxy
-   yr.FunctionProxy.invoke
    yr.instance
    yr.StatefulInstanceCreator
    yr.StatefulInstance
@@ -206,12 +204,8 @@ Python
      - 定义一个无状态函数。
    * - :doc:`yr.StatelessFunction`
      - 无状态函数句柄（推荐），使用它执行调用。
-   * - :doc:`yr.StatelessFunction.invoke`
-     - 执行被装饰的远程函数调用（StatelessFunction 版本）。
    * - :doc:`yr.FunctionProxy`
      - 无状态函数句柄（已弃用，请使用 StatelessFunction），使用它执行调用。
-   * - :doc:`yr.FunctionProxy.invoke`
-     - 执行被装饰的远程函数调用。
    * - :doc:`yr.instance`
      - 定义一个有状态函数。
    * - :doc:`yr.StatefulInstanceCreator`
