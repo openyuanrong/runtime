@@ -3,7 +3,7 @@
 yr.FunctionProxy.set_function_group_size
 -------------------------------------------------------------------
 
-.. py:method:: FunctionProxy.set_function_group_size(function_group_size: int) -> "FunctionProxy"
+.. py:method:: FunctionProxy.set_function_group_size(function_group_size: int) -> FunctionProxy
 
     设置函数组大小。
 

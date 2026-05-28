@@ -64,9 +64,14 @@ yr.Context
 yr.SessionService
 ---------------------
 
-.. py:class:: yr.SessionService()
+.. py:class:: yr.SessionService(session_id: str)
+
+    基类：``object``
 
     提供会话加载能力的 SDK 接口。
+
+    参数：
+        - **session_id** – 当前调用的会话 ID（由 Context 传入）。
 
     **方法**：
 
@@ -74,6 +79,8 @@ yr.SessionService
        :header-rows: 0
        :widths: 30 70
 
+       * - :ref:`__init__ <init_session_service>`
+         -
        * - :ref:`load_session <load_session>`
          - 加载当前调用关联的会话对象。
 
@@ -81,14 +88,29 @@ yr.SessionService
     :maxdepth: 1
     :hidden:
 
+    yr.SessionService.__init__
     yr.SessionService.load_session
 
-yr.Session
+yr.ManagedSessionObj
 ---------------------
 
-.. py:class:: yr.Session()
+.. py:class:: yr.ManagedSessionObj(session_id: str, session_json: str)
 
-    表示一个 Agent 会话对象。
+    基类：``object``
+
+    被管理的会话对象。
+
+    会话数据结构：
+
+    .. code-block:: json
+
+        {
+            "sessionID": "s-123", "histories": ["user: hello", "assistant: hi"]
+        }
+
+    参数：
+        - **session_id** – 会话 ID。
+        - **session_json** – JSON 格式的会话数据。 
 
     **方法**：
 
@@ -96,20 +118,32 @@ yr.Session
        :header-rows: 0
        :widths: 30 70
 
+       * - :ref:`__init__ <init_managed_session_obj>`
+         -
        * - :ref:`wait_for_notify <wait_for_notify>`
          - 阻塞当前执行并等待输入。
        * - :ref:`notify <notify>`
          - 唤醒正在等待的线程。
        * - :ref:`is_interrupted <is_interrupted>`
          - 检查当前会话是否已被外部中断。
+       * - :ref:`get_id <get_id>`
+         - 获取会话 ID。
+       * - :ref:`get_histories <get_histories>`
+         - 获取历史列表。
+       * - :ref:`set_histories <set_histories>`
+         - 设置历史列表。
 
 .. toctree::
     :maxdepth: 1
     :hidden:
 
-    yr.Session.wait_for_notify
-    yr.Session.notify
-    yr.Session.is_interrupted
+    yr.ManagedSessionObj.__init__
+    yr.ManagedSessionObj.wait_for_notify
+    yr.ManagedSessionObj.notify
+    yr.ManagedSessionObj.is_interrupted
+    yr.ManagedSessionObj.get_id
+    yr.ManagedSessionObj.get_histories
+    yr.ManagedSessionObj.set_histories
 
 yr.Function
 ------------------

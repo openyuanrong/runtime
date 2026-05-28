@@ -3,7 +3,7 @@
 yr.ResourceGroup.bundle_count
 -------------------------------------
 
-.. py:attribute:: ResourceGroup.bundle_count: int
+.. py:attribute:: ResourceGroup.bundle_count
    :type: int
 
    返回当前资源组中的 bundle 数量。

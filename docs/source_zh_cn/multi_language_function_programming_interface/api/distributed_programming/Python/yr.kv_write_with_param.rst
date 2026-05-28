@@ -1,7 +1,7 @@
 yr.kv_write_with_param
 =========================
 
-.. py:function:: kv_write_with_param(key: str, value: bytes, set_param: SetParam) -> None
+.. py:function:: yr.kv_write_with_param(key: str, value: bytes, set_param: SetParam) -> None
 
     提供支持自定义参数配置的存储接口。用于以更灵活的方式将二进制数据写入数据系统。
 

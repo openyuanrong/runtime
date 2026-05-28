@@ -1,9 +1,9 @@
 .. _is_interrupted:
 
-yr.Session.is_interrupted
--------------------------------
+yr.ManagedSessionObj.is_interrupted
+-------------------------------------
 
-.. py:method:: Session.is_interrupted()
+.. py:method:: ManagedSessionObj.is_interrupted() -> bool
 
     检查当前会话是否已被外部中断。
 

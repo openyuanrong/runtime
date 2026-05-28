@@ -1,6 +1,6 @@
 .. _deserialization_:
 
-yr.InstanceProxy.deserialization_
+yr.InstanceProxy.deserialization\_
 ----------------------------------------------------------------
 
 .. py:method:: InstanceProxy.deserialization_(state)

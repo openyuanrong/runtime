@@ -3,7 +3,7 @@
 yr.MethodProxy.invoke
 ------------------------------------------------
 
-.. py:method:: MethodProxy.invoke(*args, **kwargs) -> "yr.ObjectRef"
+.. py:method:: MethodProxy.invoke(*args, **kwargs) -> yr.ObjectRef
 
     执行用户函数的远程调用。
 
