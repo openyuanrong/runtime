@@ -192,7 +192,7 @@ breathe_default_project = "openYuanrong"
 html_context = {
     **ICONS,
     "blog_data": BLOG_DATA,
-    "language": "en",
+    "doc_language": "en",
     "metatags": """
             <meta name="author" content="openYuanrong Team">
             <meta name="keywords" content="openYuanrong, distributed computing engine, AI inference, Serverless">
