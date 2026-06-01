@@ -6,7 +6,7 @@
     class="version-switcher__button btn btn-sm dropdown-toggle"
   >
     <span class="language-switcher-selected">
-      {%- if language == 'zh-cn' -%}
+      {%- if doc_language == 'zh-cn' -%}
         中文
       {%- else -%}
         English
@@ -14,7 +14,7 @@
     </span>
   </button>
   <ul class="dropdown-menu" id="language-dropdown-menu" style="display: none;">
-    {%- if language == 'zh-cn' -%}
+    {%- if doc_language == 'zh-cn' -%}
       <li>
         <a href="#" id="switch-to-en" class="dropdown-item">English</a>
       </li>
